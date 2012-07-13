@@ -6,12 +6,12 @@ package otlobmobile.gui.ordernow;
 
 import com.sun.lwuit.events.ActionEvent;
 import com.sun.lwuit.layouts.BoxLayout;
-import java.util.Hashtable;
 import java.util.Vector;
 import org.ksoap2.serialization.SoapObject;
-import otlobmobile.gui.MainScreenForm;
 import otlobmobile.gui.OtlobForm;
 import otlobmobile.gui.OtlobMidlet;
+import otlobmobile.model.Area;
+import otlobmobile.model.Category;
 import otlobmobile.model.City;
 import otlobmobile.utils.GUIManager;
 import otlobmobile.utils.ObjectButton;
@@ -21,24 +21,26 @@ import otlobmobile.webclient.OtlobDataDisplayClient;
  *
  * @author Mahmoud.Ismail
  */
-public class CitiesForm extends OtlobForm {
+public class AreaCategoriesForm extends OtlobForm {
 
-    private Vector cities;
-    private Hashtable areaForms;
+    private Vector categories;
+    private final Area area;
 
-    public CitiesForm(MainScreenForm parent) {
-        super(parent, true, "Choose City");
-        areaForms = new Hashtable();
+    public AreaCategoriesForm(CityAreasForm parent, Area area) {
+        super(parent, true, "Categories");
+        this.area = area;
         fillFormComponents();
     }
 
     public final void fillFormComponents() {
-        if (cities == null) {
+        if (categories == null) {
             Runnable r = new Runnable() {
 
                 public void run() {
-                    SoapObject o = OtlobDataDisplayClient.getCountryCities(OtlobMidlet.CULTURE, 2);
-                    cities = City.parseCities(o);
+                    /*use areaID -1 to get all the categories*/
+                    SoapObject o = OtlobDataDisplayClient.GetCategoriesByAreaID(OtlobMidlet.CULTURE, area.getId());
+                    System.out.println("Categoris: \n"+o.toString());
+                    categories = Category.parseAreaCategories(o, area);
                 }
             };
             try {
@@ -48,9 +50,9 @@ public class CitiesForm extends OtlobForm {
             }
         }
         setLayout(new BoxLayout(BoxLayout.Y_AXIS));
-        for (int i = 0; i < cities.size(); i++) {
-            City c = (City) cities.elementAt(i);
-            ObjectButton b = new ObjectButton(c, c.getCityName());
+        for (int i = 0; i < categories.size(); i++) {
+            Category cat = (Category) categories.elementAt(i);
+            ObjectButton b = new ObjectButton(cat, cat.getCategoryName());
             b.addActionListener(enter);
             b.setAlignment(CENTER);
             b.getSelectedStyle().setBgColor(0xEEA336, true);
@@ -63,17 +65,13 @@ public class CitiesForm extends OtlobForm {
      * {@inheritDoc}
      */
     public void actionPerformed(ActionEvent evt) {
-        final ObjectButton focused = (ObjectButton) getFocused();
         switch (evt.getCommand().getId()) {
             case RUN_COMMAND:
                 setTransitionOutAnimator(GUIManager.SLIDE_RIGHT);
-                City c = (City) (focused).getObject();
-                System.out.println(c);
-                if (!areaForms.containsKey(focused)) {
-                    areaForms.put(focused, new CityAreasForm(this, c));
-                }
-                ((CityAreasForm) areaForms.get(focused)).show();
-
+//                if (getFocused() instanceof ObjectButton) {
+//                    City c = (City) ((ObjectButton)getFocused()).getObject();
+//                    System.out.println(c);
+//                }
                 break;
             case BACK_COMMAND:
                 setTransitionOutAnimator(GUIManager.SLIDE_LEFT);

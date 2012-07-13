@@ -6,6 +6,7 @@ package otlobmobile.gui.ordernow;
 
 import com.sun.lwuit.events.ActionEvent;
 import com.sun.lwuit.layouts.BoxLayout;
+import java.util.Hashtable;
 import java.util.Vector;
 import org.ksoap2.serialization.SoapObject;
 import otlobmobile.gui.OtlobForm;
@@ -23,11 +24,13 @@ import otlobmobile.webclient.OtlobDataDisplayClient;
 public class CityAreasForm extends OtlobForm {
 
     private Vector areas;
+    private Hashtable categoryForms;
     private final City city;
 
     public CityAreasForm(CitiesForm parent, City c) {
         super(parent, true, "Choose Area");
         this.city = c;
+        categoryForms = new Hashtable();
         fillFormComponents();
     }
 
@@ -37,7 +40,7 @@ public class CityAreasForm extends OtlobForm {
 
                 public void run() {
                     SoapObject o = OtlobDataDisplayClient.getCityAreas(OtlobMidlet.CULTURE, city.getId());
-                    areas = Area.parseAreas(o, city);
+                    areas = Area.parseCityAreas(o, city);
                 }
             };
             try {
@@ -52,7 +55,7 @@ public class CityAreasForm extends OtlobForm {
             ObjectButton b = new ObjectButton(a, a.getAreaName());
             b.addActionListener(enter);
             b.setAlignment(CENTER);
-            b.getSelectedStyle().setBgColor(0xff6600, true);
+            b.getSelectedStyle().setBgColor(0xEEA336, true);
             b.getSelectedStyle().setFgColor(0x000000, true);
             addComponent(b);
         }
@@ -62,13 +65,19 @@ public class CityAreasForm extends OtlobForm {
      * {@inheritDoc}
      */
     public void actionPerformed(ActionEvent evt) {
+        final ObjectButton focused = (ObjectButton) getFocused();
         switch (evt.getCommand().getId()) {
             case RUN_COMMAND:
                 setTransitionOutAnimator(GUIManager.SLIDE_RIGHT);
-//                if (getFocused() instanceof ObjectButton) {
-//                    City c = (City) ((ObjectButton)getFocused()).getObject();
-//                    System.out.println(c);
-//                }
+
+                Area a = (Area) (focused).getObject();
+                System.out.println(a);
+                if (!categoryForms.containsKey(focused)) {
+                    categoryForms.put(focused, new AreaCategoriesForm(this, a));
+                }
+                ((AreaCategoriesForm) categoryForms.get(focused)).show();
+
+
                 break;
             case BACK_COMMAND:
                 setTransitionOutAnimator(GUIManager.SLIDE_LEFT);
