@@ -25,7 +25,7 @@ public class CityAreasForm extends OtlobForm {
     private Vector areas;
     private final City city;
 
-    public CityAreasForm(CitiesForm parent,City c) {
+    public CityAreasForm(CitiesForm parent, City c) {
         super(parent, true, "Choose Area");
         this.city = c;
         fillFormComponents();
@@ -33,17 +33,27 @@ public class CityAreasForm extends OtlobForm {
 
     public final void fillFormComponents() {
         if (areas == null) {
-            SoapObject o = OtlobDataDisplayClient.getCityAreas(OtlobMidlet.CULTURE, city.getId());
-            areas = Area.parseAreas(o,city);
+            Runnable r = new Runnable() {
+
+                public void run() {
+                    SoapObject o = OtlobDataDisplayClient.getCityAreas(OtlobMidlet.CULTURE, city.getId());
+                    areas = Area.parseAreas(o, city);
+                }
+            };
+            try {
+                GUIManager.implementAsynchronousOperations(OtlobMidlet.getLoadingDialog(), r, true);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
         setLayout(new BoxLayout(BoxLayout.Y_AXIS));
         for (int i = 0; i < areas.size(); i++) {
             Area a = (Area) areas.elementAt(i);
-            ObjectButton b = new  ObjectButton(a, a.getAreaName());
+            ObjectButton b = new ObjectButton(a, a.getAreaName());
             b.addActionListener(enter);
             b.setAlignment(CENTER);
-            b.getSelectedStyle().setBgColor(0xff6600,true);
-            b.getSelectedStyle().setFgColor(0x000000,true);            
+            b.getSelectedStyle().setBgColor(0xff6600, true);
+            b.getSelectedStyle().setFgColor(0x000000, true);
             addComponent(b);
         }
     }
