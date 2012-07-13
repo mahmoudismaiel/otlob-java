@@ -14,6 +14,7 @@ import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransport;
 import org.xmlpull.v1.XmlPullParserException;
 import otlobmobile.model.Area;
+import otlobmobile.model.Category;
 
 /**
  *
@@ -43,6 +44,19 @@ public class OtlobDataDisplayClient {
         return callWebServiceMethod(Area.NAMESPACE,
                 Area.METHOD_NAME,
                 Area.SOAP_ACTION,
+                SERVISE_URL,
+                props);
+
+    }
+    
+      public static SoapObject GetCategoriesByAreaID(String culture, int areaID) {
+        Hashtable props = new Hashtable();
+        props.put("culture", culture);
+        props.put("areaID", new Integer(areaID));
+
+        return callWebServiceMethod(Category.NAMESPACE,
+                Category.METHOD_NAME,
+                Category.SOAP_ACTION,
                 SERVISE_URL,
                 props);
 
@@ -96,7 +110,7 @@ public class OtlobDataDisplayClient {
         SoapObject content = (SoapObject) envelope.bodyIn;
        // System.out.println(content.toString());
         content = (SoapObject) content.getProperty(0);
-        System.out.println(content.toString());
+       // System.out.println(content.toString());
 
         return content;
     }

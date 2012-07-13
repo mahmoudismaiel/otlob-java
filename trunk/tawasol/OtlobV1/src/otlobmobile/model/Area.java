@@ -98,7 +98,7 @@ public class Area {
         this.ssoID = ssoID;
     }
 
-    public static Vector parseAreas(SoapObject soap, City parent) {
+    public static Vector parseCityAreas(SoapObject soap, City parent) {
         Vector areas = new Vector();
         SoapObject content;
         Area a;
