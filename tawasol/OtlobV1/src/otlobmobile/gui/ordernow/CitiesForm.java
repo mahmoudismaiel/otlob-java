@@ -34,8 +34,18 @@ public class CitiesForm extends OtlobForm {
 
     public final void fillFormComponents() {
         if (cities == null) {
-            SoapObject o = OtlobDataDisplayClient.getCountryCities(OtlobMidlet.CULTURE, 2);
-            cities = City.parseCities(o);
+            Runnable r = new Runnable() {
+
+                public void run() {
+                    SoapObject o = OtlobDataDisplayClient.getCountryCities(OtlobMidlet.CULTURE, 2);
+                    cities = City.parseCities(o);
+                }
+            };
+            try {
+                GUIManager.implementAsynchronousOperations(OtlobMidlet.getLoadingDialog(), r, true);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
         setLayout(new BoxLayout(BoxLayout.Y_AXIS));
         for (int i = 0; i < cities.size(); i++) {
@@ -59,10 +69,10 @@ public class CitiesForm extends OtlobForm {
                 setTransitionOutAnimator(GUIManager.SLIDE_RIGHT);
                 City c = (City) (focused).getObject();
                 System.out.println(c);
-                 if (!areaForms.containsKey(focused)) {
-                     areaForms.put(focused, new CityAreasForm(this,c)); 
-                 }
-                  ((CityAreasForm) areaForms.get(focused)).show();
+                if (!areaForms.containsKey(focused)) {
+                    areaForms.put(focused, new CityAreasForm(this, c));
+                }
+                ((CityAreasForm) areaForms.get(focused)).show();
 
                 break;
             case BACK_COMMAND:
