@@ -6,13 +6,13 @@ package otlobmobile.gui.ordernow;
 
 import com.sun.lwuit.events.ActionEvent;
 import com.sun.lwuit.layouts.BoxLayout;
+import java.util.Hashtable;
 import java.util.Vector;
 import org.ksoap2.serialization.SoapObject;
 import otlobmobile.gui.OtlobForm;
 import otlobmobile.gui.OtlobMidlet;
 import otlobmobile.model.Area;
 import otlobmobile.model.Category;
-import otlobmobile.model.City;
 import otlobmobile.utils.GUIManager;
 import otlobmobile.utils.ObjectButton;
 import otlobmobile.webclient.OtlobDataDisplayClient;
@@ -24,11 +24,13 @@ import otlobmobile.webclient.OtlobDataDisplayClient;
 public class AreaCategoriesForm extends OtlobForm {
 
     private Vector categories;
+    private Hashtable branchForms;
     private final Area area;
 
     public AreaCategoriesForm(CityAreasForm parent, Area area) {
         super(parent, true, "Categories");
         this.area = area;
+        branchForms = new Hashtable();
         fillFormComponents();
     }
 
@@ -38,9 +40,12 @@ public class AreaCategoriesForm extends OtlobForm {
 
                 public void run() {
                     /*use areaID -1 to get all the categories*/
-                    SoapObject o = OtlobDataDisplayClient.GetCategoriesByAreaID(OtlobMidlet.CULTURE, area.getId());
-                    System.out.println("Categoris: \n"+o.toString());
+                    SoapObject o = OtlobDataDisplayClient.getCategoriesByAreaID(OtlobMidlet.CULTURE, area.getId());
+                   // System.out.println("Categoris: \n"+o.toString());
                     categories = Category.parseAreaCategories(o, area);
+                    
+//                    SoapObject o = OtlobDataDisplayClient.getAreaInfo(OtlobMidlet.CULTURE_EN, area.getId(),area.getCity().getId());
+//                    System.out.println("AreaInfo: \n" + o.toString());
                 }
             };
             try {
@@ -65,13 +70,17 @@ public class AreaCategoriesForm extends OtlobForm {
      * {@inheritDoc}
      */
     public void actionPerformed(ActionEvent evt) {
+        final ObjectButton focused = (ObjectButton) getFocused();
         switch (evt.getCommand().getId()) {
             case RUN_COMMAND:
                 setTransitionOutAnimator(GUIManager.SLIDE_RIGHT);
-//                if (getFocused() instanceof ObjectButton) {
-//                    City c = (City) ((ObjectButton)getFocused()).getObject();
-//                    System.out.println(c);
-//                }
+
+                Category cat = (Category) (focused).getObject();
+                System.out.println(cat);
+                if (!branchForms.containsKey(focused)) {
+                    branchForms.put(focused, new CategoryBranchesForm(this, cat));
+                }
+                ((CategoryBranchesForm) branchForms.get(focused)).show();
                 break;
             case BACK_COMMAND:
                 setTransitionOutAnimator(GUIManager.SLIDE_LEFT);

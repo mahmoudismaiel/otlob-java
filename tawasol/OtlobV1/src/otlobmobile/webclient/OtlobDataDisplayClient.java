@@ -4,7 +4,6 @@
  */
 package otlobmobile.webclient;
 
-import otlobmobile.model.City;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -13,16 +12,20 @@ import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransport;
 import org.xmlpull.v1.XmlPullParserException;
+import otlobmobile.model.City;
 import otlobmobile.model.Area;
+import otlobmobile.model.AreaInfo;
 import otlobmobile.model.Category;
+import otlobmobile.model.Branch;
 
 /**
  *
  * @author Mahmoud.Ismail
  */
 public class OtlobDataDisplayClient {
-    public static final String SERVISE_URL = "http://services.otlob.com/DataDisplayingWCF.svc?wsdl";
- 
+
+    public static final String SERVICE_URL = "http://services.otlob.com/DataDisplayingWCF.svc?wsdl";
+
     public static SoapObject getCountryCities(String culture, int countryID) {
         Hashtable props = new Hashtable();
         props.put("culture", culture);
@@ -31,7 +34,7 @@ public class OtlobDataDisplayClient {
         return callWebServiceMethod(City.NAMESPACE,
                 City.METHOD_NAME,
                 City.SOAP_ACTION,
-                SERVISE_URL,
+                SERVICE_URL,
                 props);
 
     }
@@ -44,12 +47,12 @@ public class OtlobDataDisplayClient {
         return callWebServiceMethod(Area.NAMESPACE,
                 Area.METHOD_NAME,
                 Area.SOAP_ACTION,
-                SERVISE_URL,
+                SERVICE_URL,
                 props);
 
     }
-    
-      public static SoapObject GetCategoriesByAreaID(String culture, int areaID) {
+
+    public static SoapObject getCategoriesByAreaID(String culture, int areaID) {
         Hashtable props = new Hashtable();
         props.put("culture", culture);
         props.put("areaID", new Integer(areaID));
@@ -57,10 +60,59 @@ public class OtlobDataDisplayClient {
         return callWebServiceMethod(Category.NAMESPACE,
                 Category.METHOD_NAME,
                 Category.SOAP_ACTION,
-                SERVISE_URL,
+                SERVICE_URL,
                 props);
 
     }
+
+    public static SoapObject getAreaInfo(String culture, int areaID, int countryID) {
+        Hashtable props = new Hashtable();
+        props.put("culture", culture);
+        props.put("areaID", new Integer(areaID));
+        props.put("countryID", new Integer(countryID));
+
+        return callWebServiceMethod(AreaInfo.NAMESPACE,
+                AreaInfo.METHOD_NAME,
+                AreaInfo.SOAP_ACTION,
+                SERVICE_URL,
+                props);
+
+    }
+
+    public static SoapObject getBranchesByAreaIDCategoryID(String culture, int areaID, int categoryID, int countryID) {
+        Hashtable props = new Hashtable();
+        props.put("culture", culture);
+        props.put("areaID", new Integer(areaID));
+        props.put("categoryID", new Integer(categoryID));
+        props.put("countryID", new Integer(countryID));
+//         props.put("areaID", new Integer(75644));
+//        props.put("categoryID", new Integer(-1));
+//        props.put("countryID", new Integer(2));
+        
+        return callWebServiceMethod(Branch.NAMESPACE,
+                Branch.METHOD_NAME,
+                Branch.SOAP_ACTION,
+                SERVICE_URL,
+                props);
+
+    }
+    
+     public static SoapObject getBranchProfile(String culture, int branchID,int areaID) {
+        Hashtable props = new Hashtable();
+        props.put("culture", culture);
+        props.put("areaID", new Integer(areaID));        
+        props.put("branchID", new Integer(branchID));
+//         
+        
+        return callWebServiceMethod(Branch.NAMESPACE,
+                Branch.METHOD_NAME_BRANCH_PROFILE,
+                Branch.SOAP_ACTION_BRANCH_PROFILE,
+                SERVICE_URL,
+                props);
+
+    }
+    
+    
 
     /**
      * Calls Otlob web service method
@@ -92,7 +144,9 @@ public class OtlobDataDisplayClient {
 
         }
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
-
+        
+        System.out.println("request: "+request);
+        
         envelope.dotNet = true;
         envelope.setOutputSoapObject(request);
 
@@ -107,10 +161,11 @@ public class OtlobDataDisplayClient {
         } catch (XmlPullParserException ex) {
             ex.printStackTrace();
         }
+        //  System.out.println("bodyIn error: \n"+envelope.bodyIn);
         SoapObject content = (SoapObject) envelope.bodyIn;
-       // System.out.println(content.toString());
+        System.out.println("bodyIn: \n" + content.toString());
         content = (SoapObject) content.getProperty(0);
-       // System.out.println(content.toString());
+        // System.out.println(content.toString());
 
         return content;
     }

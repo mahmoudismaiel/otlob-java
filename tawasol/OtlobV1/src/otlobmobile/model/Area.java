@@ -82,7 +82,7 @@ public class Area {
         this.isActive = isActive;
     }
 
-    public City getParent() {
+    public City getCity() {
         return parent;
     }
 
