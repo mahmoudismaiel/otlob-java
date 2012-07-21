@@ -145,7 +145,7 @@ public class OtlobDataDisplayClient {
         }
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
         
-        System.out.println("request: "+request);
+       // System.out.println("request: "+request);
         
         envelope.dotNet = true;
         envelope.setOutputSoapObject(request);
@@ -163,7 +163,7 @@ public class OtlobDataDisplayClient {
         }
         //  System.out.println("bodyIn error: \n"+envelope.bodyIn);
         SoapObject content = (SoapObject) envelope.bodyIn;
-        System.out.println("bodyIn: \n" + content.toString());
+       // System.out.println("bodyIn: \n" + content.toString());
         content = (SoapObject) content.getProperty(0);
         // System.out.println(content.toString());
 

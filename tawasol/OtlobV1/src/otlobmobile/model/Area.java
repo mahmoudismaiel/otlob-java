@@ -140,7 +140,7 @@ public class Area {
             areas.addElement(a);
 
         }
-        System.out.println("Found Areas:" + areas.size());
+      //  System.out.println("Found Areas:" + areas.size());
 
         return areas;
     }

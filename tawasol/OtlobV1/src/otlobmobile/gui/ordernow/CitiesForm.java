@@ -68,7 +68,7 @@ public class CitiesForm extends OtlobForm {
             case RUN_COMMAND:
                 setTransitionOutAnimator(GUIManager.SLIDE_RIGHT);
                 City c = (City) (focused).getObject();
-                System.out.println(c);
+               // System.out.println(c);
                 if (!areaForms.containsKey(focused)) {
                     areaForms.put(focused, new CityAreasForm(this, c));
                 }

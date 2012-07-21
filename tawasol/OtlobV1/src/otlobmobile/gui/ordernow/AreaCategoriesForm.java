@@ -76,7 +76,7 @@ public class AreaCategoriesForm extends OtlobForm {
                 setTransitionOutAnimator(GUIManager.SLIDE_RIGHT);
 
                 Category cat = (Category) (focused).getObject();
-                System.out.println(cat);
+               // System.out.println(cat);
                 if (!branchForms.containsKey(focused)) {
                     branchForms.put(focused, new CategoryBranchesForm(this, cat));
                 }

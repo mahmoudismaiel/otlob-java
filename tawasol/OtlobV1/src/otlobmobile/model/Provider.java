@@ -10,4 +10,11 @@ package otlobmobile.model;
  */
 class Provider {
     
+    int id;
+
+    public Provider(int id) {
+        this.id = id;
+    }
+    
+    
 }

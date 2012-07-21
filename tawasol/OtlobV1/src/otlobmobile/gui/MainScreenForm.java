@@ -123,7 +123,7 @@ public class MainScreenForm extends OtlobForm {
         return b;
        }
        catch (Exception ex){
-           System.out.println("names "+otlobSectionsNames[i]);
+           //System.out.println("names "+otlobSectionsNames[i]);
            return null;
        }
     }
