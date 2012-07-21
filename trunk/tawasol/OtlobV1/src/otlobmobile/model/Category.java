@@ -31,6 +31,7 @@ public class Category {
         this.parent = parent;
     }
     
+    
     public Category(String categoryName, String categoryNameL2, int id, Area parent) {
         this.categoryName = categoryName;
         this.categoryNameL2 = categoryNameL2;
@@ -61,6 +62,15 @@ public class Category {
     public void setId(int id) {
         this.id = id;
     }
+
+    public Area getArea() {
+        return parent;
+    }
+
+    public void setParent(Area parent) {
+        this.parent = parent;
+    }
+    
     
     public static Vector parseAreaCategories(SoapObject soap, Area parent) {
         Vector categories = new Vector();

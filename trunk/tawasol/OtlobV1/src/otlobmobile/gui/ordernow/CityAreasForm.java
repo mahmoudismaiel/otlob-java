@@ -76,8 +76,6 @@ public class CityAreasForm extends OtlobForm {
                     categoryForms.put(focused, new AreaCategoriesForm(this, a));
                 }
                 ((AreaCategoriesForm) categoryForms.get(focused)).show();
-
-
                 break;
             case BACK_COMMAND:
                 setTransitionOutAnimator(GUIManager.SLIDE_LEFT);

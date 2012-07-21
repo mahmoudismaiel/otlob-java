@@ -5,14 +5,24 @@
 package otlobmobile.model;
 
 import java.util.Vector;
+import org.ksoap2.serialization.SoapObject;
 
 /**
  *
  * @author Mahmoud.Ismail
  */
-class Branch {
+public class Branch {
 
+    //Static Otlob Web Service parameters for getting BRANCH data by Category
+    public static final String NAMESPACE = "http://tempuri.org/";
+    public static final String METHOD_NAME = "GetBranchesByAreaIDCategoryID";
+    public static final String SOAP_ACTION = "http://tempuri.org/IDataDisplayingWCF/GetBranchesByAreaIDCategoryID";
+    //Static Otlob Web Service parameters for getting BRANCH profile
+    public static final String METHOD_NAME_BRANCH_PROFILE = "GetBranchProfile";
+    public static final String SOAP_ACTION_BRANCH_PROFILE  = "http://tempuri.org/IDataDisplayingWCF/GetBranchProfile";
+    //Class fields
     private Area area;
+    private Category category;
     private String branchAddress;
     private String branchAddressL2;
     private double branchDelivery;
@@ -37,12 +47,11 @@ class Branch {
     private String phone1;
     private String phone2;
     private String phone3;
-    private Provider provider;    
+    private Provider provider;
     private String REASON_TEXT;
     private boolean rules;
     private String SHORT_NAME;
     private int timeLimit;
-    
     private Vector branchRates;
     private Vector branchRules;
     private Vector branchAreas;
@@ -50,9 +59,9 @@ class Branch {
 
     public Branch() {
     }
-    
-    public Branch(int branchID) {
-        this.id = branchID;
+
+    public Branch(Category category) {
+        this.category = category;
     }
 
     public String getOHstatusName() {
@@ -326,7 +335,55 @@ class Branch {
     public void setTimeLimit(int timeLimit) {
         this.timeLimit = timeLimit;
     }
-    
-    
-}
 
+    public static Vector parseCategoryBraches(SoapObject soap, Category parent) {
+        Vector areas = new Vector();
+        SoapObject content;
+        Branch a;
+        for (int i = 0; i < soap.getPropertyCount(); i++) {
+            content = (SoapObject) soap.getProperty(i);
+            a = new Branch(parent);
+            for (int j = 0; j < content.getPropertyCount(); j++) {
+                String s = String.valueOf(content.getProperty(j));
+                switch (j) {
+//                    case 0:
+//                        a.setAreaName(s);
+//                        break;
+//                    case 1:
+//                        a.setAreaNameL2(s);
+//                        break;
+//                    case 2:
+//                        a.setAttachedToBranchID(Integer.parseInt(s));
+//                        break;
+//                    case 3:
+//                        // a.setCountryId(Integer.parseInt(s));
+//                        break;
+//                    case 4:
+//                        // a.setFlashIndex(Integer.parseInt(s));
+//                        break;
+//                    case 5:
+//                        a.setId(Integer.parseInt(s));
+//                        break;
+//                    case 6:
+//                        // a.setSsoID(Integer.parseInt(s));
+//                        break;
+//                    case 7:
+//                        a.setSsoID(Integer.parseInt(s));
+//                        break;
+//                    case 8:
+//                        a.setIsActive((s.equals("true")) ? true : false);
+//                        break;
+                }
+            }
+            areas.addElement(a);
+
+        }
+        System.out.println("Found Branches:" + areas.size());
+
+        return areas;
+    }
+
+    public String toString() {
+        return "Branch " + id + " : " + branchName;
+    }
+}
