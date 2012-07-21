@@ -9,8 +9,10 @@ import java.util.Vector;
 import org.ksoap2.serialization.SoapObject;
 import otlobmobile.gui.OtlobForm;
 import otlobmobile.gui.OtlobMidlet;
+import otlobmobile.model.Branch;
 import otlobmobile.model.Category;
 import otlobmobile.utils.GUIManager;
+import otlobmobile.utils.ObjectButton;
 import otlobmobile.webclient.OtlobDataDisplayClient;
 
 /**
@@ -19,7 +21,7 @@ import otlobmobile.webclient.OtlobDataDisplayClient;
  */
 public class CategoryBranchesForm extends OtlobForm {
 
-    private int[] fixed_IDs = new int[]{121013,121867};
+    private int[] fixed_IDs = new int[]{121013, 121867};
     private Vector branches;
     private final Category category;
 
@@ -35,13 +37,31 @@ public class CategoryBranchesForm extends OtlobForm {
 
                 public void run() {
                     /*use areaID -1 to get all the categories*/
-                    SoapObject o = OtlobDataDisplayClient.getBranchesByAreaIDCategoryID(OtlobMidlet.CULTURE,
-                                                    category.getArea().getId(),
-                                                    category.getId(),
-                                                    2);
-                                                   // category.getArea().getCity().getCountryId());
-                    System.out.println("Branches: \n" + o.toString());
-                    //branches = Category.parseAreaCategories(o, category);
+                    for (int i = 0; i < fixed_IDs.length; i++) {
+                        SoapObject o = OtlobDataDisplayClient.getBranchProfile(OtlobMidlet.CULTURE,
+                                fixed_IDs[i],
+                                category.getArea().getId());
+                        // category.getArea().getCity().getCountryId());
+                        System.out.println("Branch" + o.toString());
+
+                        //branches = Branch.parseBranchProfile(o, category,category.getArea());
+
+                        //for (int j = 0; j < branches.size(); j++) {
+                        //    Branch branch = (Branch)branches.elementAt(j);
+                        Branch branch = Branch.parseBranchProfile(o, category, category.getArea());
+                        ObjectButton btn = new ObjectButton(branch.getBranchName());
+                        btn.setObject(branch);
+                        btn.addActionListener(enter);
+                        btn.setIcon(GUIManager.loadImage(branch.getBranchMenuLogo()));
+                        btn.getSelectedStyle().setBgColor(0xEEA336, true);
+                        btn.getSelectedStyle().setFgColor(0x000000, true);
+                        addComponent(btn);
+
+                        //}
+
+                    }
+
+
 
 
                 }

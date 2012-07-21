@@ -98,7 +98,7 @@ public class Category {
             }
             categories.addElement(cat);
         }
-        System.out.println("Found Categories:" + categories.size());
+       // System.out.println("Found Categories:" + categories.size());
         
         if (categories.size() > 0) {
             categories.insertElementAt(new Category("All Categories", null, -1, parent), 0);

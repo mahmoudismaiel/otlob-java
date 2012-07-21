@@ -133,7 +133,7 @@ public class City {
             cities.addElement(c);
 
         }
-        System.out.println("Found cities:" + cities.size());
+        //System.out.println("Found cities:" + cities.size());
 
         return cities;
     }

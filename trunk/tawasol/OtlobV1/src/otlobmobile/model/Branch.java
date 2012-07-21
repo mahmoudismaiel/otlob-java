@@ -18,8 +18,8 @@ public class Branch {
     public static final String METHOD_NAME = "GetBranchesByAreaIDCategoryID";
     public static final String SOAP_ACTION = "http://tempuri.org/IDataDisplayingWCF/GetBranchesByAreaIDCategoryID";
     //Static Otlob Web Service parameters for getting BRANCH profile
-    public static final String METHOD_NAME_BRANCH_PROFILE = "GetBranchProfile";
-    public static final String SOAP_ACTION_BRANCH_PROFILE  = "http://tempuri.org/IDataDisplayingWCF/GetBranchProfile";
+    public static final String METHOD_NAME_BRANCH_PROFILE = "GetBranchProfileForMobile";
+    public static final String SOAP_ACTION_BRANCH_PROFILE = "http://tempuri.org/IDataDisplayingWCF/GetBranchProfileForMobile";
     //Class fields
     private Area area;
     private Category category;
@@ -27,6 +27,7 @@ public class Branch {
     private String branchAddressL2;
     private double branchDelivery;
     private double branchDiscount;
+    private double branchMinCharge;
     private boolean branchExtraRates;
     private String branchName;
     private String branchNameL2;
@@ -34,7 +35,7 @@ public class Branch {
     private double branchTaxes;
     private String branchLogo;
     private String branchMenuLogo;
-    private int closingTime;
+    private String closingTime12h;
     private short dayOff;
     private int deliverIn;
     private double discout;
@@ -43,6 +44,8 @@ public class Branch {
     private boolean multiAreaRules;
     private String OHstatusName;
     private int openingTime;
+    private String openingTime12h;
+    private boolean closed;
     private int parentStatus;
     private String phone1;
     private String phone2;
@@ -60,8 +63,9 @@ public class Branch {
     public Branch() {
     }
 
-    public Branch(Category category) {
+    public Branch(Category category, Area area) {
         this.category = category;
+        this.area = area;
     }
 
     public String getOHstatusName() {
@@ -140,6 +144,22 @@ public class Branch {
         return branchExtraRates;
     }
 
+    public double getBranchMinCharge() {
+        return branchMinCharge;
+    }
+
+    public void setBranchMinCharge(double branchMinCharge) {
+        this.branchMinCharge = branchMinCharge;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
     public void setBranchExtraRates(boolean branchExtraRates) {
         this.branchExtraRates = branchExtraRates;
     }
@@ -150,6 +170,22 @@ public class Branch {
 
     public void setBranchItems(Vector branchItems) {
         this.branchItems = branchItems;
+    }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public void setClosed(boolean closed) {
+        this.closed = closed;
+    }
+
+    public String getOpeningTime12h() {
+        return openingTime12h;
+    }
+
+    public void setOpeningTime12h(String openingTime12h) {
+        this.openingTime12h = openingTime12h;
     }
 
     public String getBranchLogo() {
@@ -216,12 +252,12 @@ public class Branch {
         this.branchTaxes = branchTaxes;
     }
 
-    public int getClosingTime() {
-        return closingTime;
+    public String getClosingTime12h() {
+        return closingTime12h;
     }
 
-    public void setClosingTime(int closingTime) {
-        this.closingTime = closingTime;
+    public void setClosingTime12h(String closingTime12h) {
+        this.closingTime12h = closingTime12h;
     }
 
     public short getDayOff() {
@@ -336,51 +372,79 @@ public class Branch {
         this.timeLimit = timeLimit;
     }
 
-    public static Vector parseCategoryBraches(SoapObject soap, Category parent) {
-        Vector areas = new Vector();
-        SoapObject content;
-        Branch a;
+    /**
+     * Used by Get Branch profile 
+     * @param soap
+     * @param category
+     * @param area
+     * @return 
+     */
+    public static Branch parseBranchProfile(SoapObject soap, Category category, Area area) {
+       // Vector branches = new Vector();
+       // SoapObject content;
+        Branch b = new Branch(category, area);
         for (int i = 0; i < soap.getPropertyCount(); i++) {
-            content = (SoapObject) soap.getProperty(i);
-            a = new Branch(parent);
-            for (int j = 0; j < content.getPropertyCount(); j++) {
-                String s = String.valueOf(content.getProperty(j));
+            //content = (SoapObject) soap.getProperty(i);            
+            for (int j = 0; j < soap.getPropertyCount(); j++) {
+                String s = String.valueOf(soap.getProperty(j));
                 switch (j) {
-//                    case 0:
-//                        a.setAreaName(s);
-//                        break;
-//                    case 1:
-//                        a.setAreaNameL2(s);
-//                        break;
-//                    case 2:
-//                        a.setAttachedToBranchID(Integer.parseInt(s));
-//                        break;
-//                    case 3:
-//                        // a.setCountryId(Integer.parseInt(s));
-//                        break;
-//                    case 4:
-//                        // a.setFlashIndex(Integer.parseInt(s));
-//                        break;
-//                    case 5:
-//                        a.setId(Integer.parseInt(s));
-//                        break;
-//                    case 6:
-//                        // a.setSsoID(Integer.parseInt(s));
-//                        break;
-//                    case 7:
-//                        a.setSsoID(Integer.parseInt(s));
-//                        break;
-//                    case 8:
-//                        a.setIsActive((s.equals("true")) ? true : false);
-//                        break;
+                    case 0:
+                        //a.setAreaName(s);
+                        break;
+                    case 1:
+                        b.setBranchLogo(s);
+                        break;
+                    case 2:
+                        b.setBranchMenuLogo(s);
+                        break;
+                    case 3:
+                        b.setBranchAddress(s);
+                        break;
+                    case 4:
+                       // System.out.println("ZZ:"+s);
+                        b.setBranchDelivery(Double.parseDouble(s));
+                        break;
+                    case 5:
+                        b.setBranchDiscount(Double.parseDouble(s));
+                        break;
+                    case 6:
+                        b.setBranchMinCharge(Double.parseDouble(s));
+                        break;
+                    case 7:
+                        b.setBranchName(s);
+                        break;
+                    case 8:
+                        b.setBranchTaxes(Double.parseDouble(s));
+                        break;
+                    case 9:
+                        b.setClosingTime12h(s);
+                        break;
+                    case 10:
+                        b.setDeliverIn(Integer.parseInt(s));
+                        break;
+                    case 11:
+                        b.setId(Integer.parseInt(s));
+                        break;
+                    case 12:
+                        b.setClosed((s.equals("0")) ? true : false);
+                        break;
+                    case 13:
+                        b.setOpeningTime(Integer.parseInt(s));
+                        break;
+                    case 14:
+                        b.setOpeningTime12h(s);
+                        break;
+                    case 15:
+                        b.setProvider(new Provider(Integer.parseInt(s)));
+                        break;
                 }
             }
-            areas.addElement(a);
+            //branches.addElement(b);
 
         }
-        System.out.println("Found Branches:" + areas.size());
+        //System.out.println("Found Branches:" + branches.size());
 
-        return areas;
+        return b;
     }
 
     public String toString() {
