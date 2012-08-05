@@ -13,7 +13,7 @@ import org.ksoap2.serialization.SoapObject;
  */
 public class City {
 
-    //Static Otlob Web Service parameters
+    //Static Otlob Web Service parameters    
     public static final String NAMESPACE = "http://tempuri.org/";
     public static final String METHOD_NAME = "GetCitiesByCountryID";
     public static final String SOAP_ACTION = "http://tempuri.org/IDataDisplayingWCF/GetCitiesByCountryID";    

@@ -71,7 +71,7 @@ public class CityAreasForm extends OtlobForm {
                 setTransitionOutAnimator(GUIManager.SLIDE_RIGHT);
 
                 Area a = (Area) (focused).getObject();
-               // System.out.println(a);
+                System.out.println(a);
                 if (!categoryForms.containsKey(focused)) {
                     categoryForms.put(focused, new AreaCategoriesForm(this, a));
                 }

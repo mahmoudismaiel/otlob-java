@@ -11,7 +11,8 @@ import java.util.Vector;
 import org.ksoap2.serialization.SoapObject;
 import otlobmobile.gui.OtlobForm;
 import otlobmobile.gui.OtlobMidlet;
-import otlobmobile.model.Area;
+import otlobmobile.model.Branch;
+import otlobmobile.model.BranchForMobile;
 import otlobmobile.model.Category;
 import otlobmobile.utils.GUIManager;
 import otlobmobile.utils.ObjectButton;
@@ -21,16 +22,16 @@ import otlobmobile.webclient.OtlobDataDisplayClient;
  *
  * @author Mahmoud.Ismail
  */
-public class AreaCategoriesForm extends OtlobForm {
+public class BranchMenuForm extends OtlobForm {
 
     private Vector categories;
-    private Hashtable branchForms;
-    private final Area area;
+    private Hashtable catItemsForms;
+    private final Branch branch;
 
-    public AreaCategoriesForm(CityAreasForm parent, Area area) {
-        super(parent, true, "Categories");
-        this.area = area;
-        branchForms = new Hashtable();
+    public BranchMenuForm(CategoryBranchesForm parent, Branch branch) {
+        super(parent, true, "Menu");
+        this.branch = branch;
+        catItemsForms = new Hashtable();
         fillFormComponents();
     }
 
@@ -38,14 +39,18 @@ public class AreaCategoriesForm extends OtlobForm {
         if (categories == null) {
             Runnable r = new Runnable() {
 
-                public void run() {
-                    /*use areaID -1 to get all the categories*/
-                    SoapObject o = OtlobDataDisplayClient.getCategoriesByAreaID(OtlobMidlet.CULTURE, area.getId());
-                   // System.out.println("Categoris: \n"+o.toString());
-                    categories = Category.parseAreaCategories(o, area);
+                public void run() {                 
+                    boolean closed = (branch.isClosed().equals("0"))?false:true;
+//                    SoapObject o = OtlobDataDisplayClient.getMenuForMobile(OtlobMidlet.CULTURE,
+//                                branch.getId(),
+//                                branch.getProvider().getId(),
+//                                closed);
+                    SoapObject o = OtlobDataDisplayClient.getMenu(OtlobMidlet.CULTURE,
+                                branch);
+                        // category.getArea().getCity().getCountryId());
+                        System.out.println("Menu " + o.toString());
+                  
                     
-//                    SoapObject o = OtlobDataDisplayClient.getAreaInfo(OtlobMidlet.CULTURE_EN, area.getId(),area.getCity().getId());
-//                    System.out.println("AreaInfo: \n" + o.toString());
                 }
             };
             try {
@@ -53,6 +58,7 @@ public class AreaCategoriesForm extends OtlobForm {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+            
         }
         setLayout(new BoxLayout(BoxLayout.Y_AXIS));
         for (int i = 0; i < categories.size(); i++) {
@@ -73,14 +79,14 @@ public class AreaCategoriesForm extends OtlobForm {
         final ObjectButton focused = (ObjectButton) getFocused();
         switch (evt.getCommand().getId()) {
             case RUN_COMMAND:
-                setTransitionOutAnimator(GUIManager.SLIDE_RIGHT);
-
-                Category cat = (Category) (focused).getObject();
-                System.out.println(cat);
-                if (!branchForms.containsKey(focused)) {
-                    branchForms.put(focused, new CategoryBranchesForm(this, cat));
-                }
-                ((CategoryBranchesForm) branchForms.get(focused)).show();
+//                setTransitionOutAnimator(GUIManager.SLIDE_RIGHT);
+//
+//                Category cat = (Category) (focused).getObject();
+//               // System.out.println(cat);
+//                if (!branchForms.containsKey(focused)) {
+//                    branchForms.put(focused, new CategoryBranchesForm(this, cat));
+//                }
+//                ((CategoryBranchesForm) branchForms.get(focused)).show();
                 break;
             case BACK_COMMAND:
                 setTransitionOutAnimator(GUIManager.SLIDE_LEFT);

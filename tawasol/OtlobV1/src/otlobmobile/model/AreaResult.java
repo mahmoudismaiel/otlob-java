@@ -11,13 +11,13 @@ package otlobmobile.model;
 public class AreaResult {
     
     private Area area;
-    private Branch branch;
+    private BranchForMobile branch;
     private Provider provider;
 
     public AreaResult() {
     }
 
-    public AreaResult(Area area, Branch branch, Provider provider) {
+    public AreaResult(Area area, BranchForMobile branch, Provider provider) {
         this.area = area;
         this.branch = branch;
         this.provider = provider;
@@ -31,11 +31,11 @@ public class AreaResult {
         this.area = area;
     }
 
-    public Branch getBranch() {
+    public BranchForMobile getBranch() {
         return branch;
     }
 
-    public void setBranch(Branch branch) {
+    public void setBranch(BranchForMobile branch) {
         this.branch = branch;
     }
 

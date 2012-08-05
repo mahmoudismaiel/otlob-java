@@ -13,7 +13,7 @@ import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransport;
 import org.xmlpull.v1.XmlPullParserException;
-import otlobmobile.model.City;
+import otlobmobile.model2.City2;
 import otlobmobile.model.Area;
 import otlobmobile.model.AreaInfo;
 import otlobmobile.model.Branch;
@@ -25,18 +25,18 @@ import otlobmobile.model.ItemCategory;
  *
  * @author Mahmoud.Ismail
  */
-public class OtlobDataDisplayClient {
+public class OtlobGatewayV3Client {
 
-    public static final String SERVICE_URL = "http://services.otlob.com/DataDisplayingWCF.svc?wsdl";
+    public static final String SERVICE_URL = "http://www.otlob.com/OtlobGatewayV3/service.asmx?wsdl";
 
-    public static SoapObject getCountryCities(String culture, int countryID) {
+    public static SoapObject getCountryCities(int countryID) {
         Hashtable props = new Hashtable();
-        props.put("culture", culture);
+        // props.put("culture", culture);
         props.put("countryID", new Integer(countryID));
 
-        return callWebServiceMethod(City.NAMESPACE,
-                City.METHOD_NAME,
-                City.SOAP_ACTION,
+        return callWebServiceMethod(City2.NAMESPACE,
+                City2.METHOD_NAME,
+                City2.SOAP_ACTION,
                 SERVICE_URL,
                 props);
 
@@ -195,11 +195,11 @@ public class OtlobDataDisplayClient {
 
         envelope.dotNet = true;
         envelope.setOutputSoapObject(request);
-        envelope.encodingStyle = SoapEnvelope.ENV;       
+        envelope.encodingStyle = SoapEnvelope.ENV;
         envelope.implicitTypes = false;
-        
 
-       //  envelope.addMapping(NAMESPACE, "branch", new Branch().getClass());
+
+        //  envelope.addMapping(NAMESPACE, "branch", new Branch().getClass());
         HttpTransport j2meHttpTransport = new HttpTransport(URL);
         try {
             //if you want to debug, uncomment next line
@@ -218,13 +218,16 @@ public class OtlobDataDisplayClient {
 
         //  System.out.println("bodyIn error: \n"+envelope.bodyIn);
         SoapObject content = (SoapObject) envelope.bodyIn;
-        // System.out.println("bodyIn: \n" + content.toString());
+        //System.out.println("bodyIn: \n" + content.toString());
+
         content = (SoapObject) content.getProperty(0);
-         System.out.println(content.toString());
+        // System.out.println(content.toString());
+        
+        System.out.println(((SoapObject) content.getProperty(1)).getProperty(0));
+
+        content = (SoapObject) ((SoapObject) content.getProperty(1)).getProperty(0);
+
 
         return content;
     }
-    
-    
-    
 }
