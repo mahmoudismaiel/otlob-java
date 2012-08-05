@@ -4,22 +4,25 @@
  */
 package otlobmobile.model;
 
+import java.util.Hashtable;
 import java.util.Vector;
+import org.ksoap2.serialization.KvmSerializable;
+import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 
 /**
  *
  * @author Mahmoud.Ismail
  */
-public class Branch {
+public class Branch implements KvmSerializable {
 
     //Static Otlob Web Service parameters for getting BRANCH data by Category
     public static final String NAMESPACE = "http://tempuri.org/";
     public static final String METHOD_NAME = "GetBranchesByAreaIDCategoryID";
     public static final String SOAP_ACTION = "http://tempuri.org/IDataDisplayingWCF/GetBranchesByAreaIDCategoryID";
     //Static Otlob Web Service parameters for getting BRANCH profile
-    public static final String METHOD_NAME_BRANCH_PROFILE = "GetBranchProfileForMobile";
-    public static final String SOAP_ACTION_BRANCH_PROFILE = "http://tempuri.org/IDataDisplayingWCF/GetBranchProfileForMobile";
+    public static final String METHOD_NAME_BRANCH_PROFILE = "GetBranchProfile";
+    public static final String SOAP_ACTION_BRANCH_PROFILE = "http://tempuri.org/IDataDisplayingWCF/GetBranchProfile";
     //Class fields
     private Area area;
     private Category category;
@@ -35,17 +38,18 @@ public class Branch {
     private double branchTaxes;
     private String branchLogo;
     private String branchMenuLogo;
+    private double closingTime;
     private String closingTime12h;
     private short dayOff;
     private int deliverIn;
-    private double discout;
+    private double discount;
     private String faxNumber;
     private int id;
     private boolean multiAreaRules;
     private String OHstatusName;
     private int openingTime;
     private String openingTime12h;
-    private boolean closed;
+    private String isClosed;
     private int parentStatus;
     private String phone1;
     private String phone2;
@@ -172,12 +176,12 @@ public class Branch {
         this.branchItems = branchItems;
     }
 
-    public boolean isClosed() {
-        return closed;
+    public String isClosed() {
+        return isClosed;
     }
 
-    public void setClosed(boolean closed) {
-        this.closed = closed;
+    public void setClosed(String isClosed) {
+        this.isClosed = isClosed;
     }
 
     public String getOpeningTime12h() {
@@ -186,6 +190,14 @@ public class Branch {
 
     public void setOpeningTime12h(String openingTime12h) {
         this.openingTime12h = openingTime12h;
+    }
+
+    public double getClosingTime() {
+        return closingTime;
+    }
+
+    public void setClosingTime(double closingTime) {
+        this.closingTime = closingTime;
     }
 
     public String getBranchLogo() {
@@ -277,11 +289,11 @@ public class Branch {
     }
 
     public double getDiscout() {
-        return discout;
+        return discount;
     }
 
     public void setDiscout(double discout) {
-        this.discout = discout;
+        this.discount = discout;
     }
 
     public String getFaxNumber() {
@@ -373,81 +385,548 @@ public class Branch {
     }
 
     /**
-     * Used by Get Branch profile 
+     * Used by Get Branch profile
      * @param soap
      * @param category
      * @param area
-     * @return 
+     * @return
      */
     public static Branch parseBranchProfile(SoapObject soap, Category category, Area area) {
-       // Vector branches = new Vector();
-       // SoapObject content;
+        // Vector branches = new Vector();
+        // SoapObject content;
         Branch b = new Branch(category, area);
-        for (int i = 0; i < soap.getPropertyCount(); i++) {
-            //content = (SoapObject) soap.getProperty(i);            
-            for (int j = 0; j < soap.getPropertyCount(); j++) {
-                String s = String.valueOf(soap.getProperty(j));
-                switch (j) {
-                    case 0:
-                        //a.setAreaName(s);
-                        break;
-                    case 1:
-                        b.setBranchLogo(s);
-                        break;
-                    case 2:
-                        b.setBranchMenuLogo(s);
-                        break;
-                    case 3:
-                        b.setBranchAddress(s);
-                        break;
-                    case 4:
-                       // System.out.println("ZZ:"+s);
-                        b.setBranchDelivery(Double.parseDouble(s));
-                        break;
-                    case 5:
-                        b.setBranchDiscount(Double.parseDouble(s));
-                        break;
-                    case 6:
-                        b.setBranchMinCharge(Double.parseDouble(s));
-                        break;
-                    case 7:
-                        b.setBranchName(s);
-                        break;
-                    case 8:
-                        b.setBranchTaxes(Double.parseDouble(s));
-                        break;
-                    case 9:
-                        b.setClosingTime12h(s);
-                        break;
-                    case 10:
-                        b.setDeliverIn(Integer.parseInt(s));
-                        break;
-                    case 11:
-                        b.setId(Integer.parseInt(s));
-                        break;
-                    case 12:
-                        b.setClosed((s.equals("0")) ? true : false);
-                        break;
-                    case 13:
-                        b.setOpeningTime(Integer.parseInt(s));
-                        break;
-                    case 14:
-                        b.setOpeningTime12h(s);
-                        break;
-                    case 15:
-                        b.setProvider(new Provider(Integer.parseInt(s)));
-                        break;
-                }
+        Provider p = new Provider();
+
+        for (int j = 0; j < soap.getPropertyCount(); j++) {
+            String s = String.valueOf(soap.getProperty(j));
+            switch (j) {
+                case 6:
+                    b.branchLogo = s;
+                    break;
+                case 8:
+                    b.branchMenuLogo = s;
+                    break;
+                case 11:
+                    b.branchAddress = s;
+                    break;
+                case 13:
+                    b.branchDelivery = Double.parseDouble(s);
+                    break;
+                case 14:
+                    b.branchDiscount = Double.parseDouble(s);
+                    break;
+                case 15:
+                    b.branchExtraRates = (s.equals("true")) ? true : false;
+                    break;
+                case 16:
+                    b.branchMinCharge = Double.parseDouble(s);
+                    break;
+                case 17:
+                    b.branchName = s;
+                    break;
+                case 19:
+                    b.branchOnline = (s.equals("true")) ? true : false;
+                    break;
+                case 21:
+                    b.branchTaxes = Double.parseDouble(s);
+                    break;
+                case 26:
+                    b.closingTime = Double.parseDouble(s);
+                    break;
+                case 27:
+                    b.closingTime12h = s;
+                    break;
+                case 29:
+                    b.dayOff = Short.parseShort(s);
+                    break;
+                case 30:
+                    b.deliverIn = Integer.parseInt(s);
+                    break;
+                case 32:
+                    b.discount = Double.parseDouble(s);
+                    break;
+                case 35:
+                    b.id = Integer.parseInt(s);
+                    break;
+                case 36:
+                    b.isClosed = s;
+                    break;
+                case 38:
+                    b.multiAreaRules = (s.equals("true")) ? true : false;
+                    break;
+                case 40:
+                    b.openingTime = Integer.parseInt(s);
+                    break;
+                case 41:
+                    b.openingTime12h = s;
+                    break;
+
+                case 53:
+                    p.id = Integer.parseInt(s);
+                    break;
+                case 54:
+                    p.name = s;
+                    break;
+                case 56:
+                    b.rules = (s.equals("true")) ? true : false;
+                    break;
+                default:
+
             }
             //branches.addElement(b);
 
         }
         //System.out.println("Found Branches:" + branches.size());
-
+        b.setProvider(p);
         return b;
     }
 
     public String toString() {
         return "Branch " + id + " : " + branchName;
+    }
+
+    public Object getProperty(int i) {
+        switch (i) {
+            case 0:
+                return new Integer(area.getId());
+            case 1:
+                return area.getAreaName();
+            case 3:
+                return new Integer(0);
+            case 6:
+                return branchLogo;
+            case 8:
+                return branchMenuLogo;
+            case 11:
+                return branchAddress;
+            case 13:
+                return new Double(branchDelivery).toString();
+            case 14:
+                return new Double(branchDiscount).toString();
+            case 15:
+                return (branchExtraRates ? Boolean.TRUE : Boolean.FALSE);
+            case 16:
+                return new Double(branchMinCharge).toString();
+            case 17:
+                return branchName;
+            case 19:
+                return (branchOnline ? Boolean.TRUE : Boolean.FALSE);
+            case 20:
+                return new Integer(0);
+            case 21:
+                return new Double(branchTaxes).toString();
+            case 22:
+                return new Integer(0);
+            case 24:
+                return new Integer(category.getId());
+            case 25:
+                return category.getCategoryName();
+            case 26:
+                return new Double(closingTime).toString();
+            case 27:
+                return closingTime12h;
+            case 28:
+                return new Integer(0);
+            case 29:
+                return new Integer(dayOff);
+            case 30:
+                return new Integer(deliverIn);
+            case 31:
+                return "+";
+            case 32:
+                return new Double(discount).toString();
+            case 35:
+                return new Integer(id);
+            case 36:
+                return isClosed;
+            case 37:
+                return new Integer(0);
+            case 38:
+                return (multiAreaRules ? Boolean.TRUE : Boolean.FALSE);
+            case 40:
+                return new Integer(openingTime);
+            case 41:
+                return openingTime12h;
+            case 42:
+                return new Integer(0);
+            case 44:
+                return new Integer(0);
+            case 47:
+                return new Integer(0);
+            case 48:
+                return new Integer(0);
+            case 53:
+                return new Integer(provider.getId());
+            case 54:
+                return provider.getName();
+            case 56:
+                return (rules ? Boolean.TRUE : Boolean.FALSE);
+            case 61:
+            case 62:
+            case 63:
+            case 64:
+                return new Integer(0);
+            default:
+                return null;
+        }
+    }
+
+    public int getPropertyCount() {
+        return 65;
+    }
+
+    public void setProperty(int i, Object o) {
+        Branch b = this;
+        String s = o.toString();
+        switch (i) {
+            case 6:
+                b.branchLogo = s;
+                break;
+            case 8:
+                b.branchMenuLogo = s;
+                break;
+            case 11:
+                b.branchAddress = s;
+                break;
+            case 13:
+                b.branchDelivery = Double.parseDouble(s);
+                break;
+            case 14:
+                b.branchDiscount = Double.parseDouble(s);
+                break;
+            case 15:
+                b.branchExtraRates = (s.equals("true")) ? true : false;
+                break;
+            case 16:
+                b.branchMinCharge = Double.parseDouble(s);
+                break;
+            case 17:
+                b.branchName = s;
+                break;
+            case 19:
+                b.branchOnline = (s.equals("true")) ? true : false;
+                break;
+            case 21:
+                b.branchTaxes = Double.parseDouble(s);
+                break;
+            case 26:
+                b.closingTime = Double.parseDouble(s);
+                break;
+            case 27:
+                b.closingTime12h = s;
+                break;
+            case 29:
+                b.dayOff = Short.parseShort(s);
+                break;
+            case 30:
+                b.deliverIn = Integer.parseInt(s);
+                break;
+            case 32:
+                b.discount = Double.parseDouble(s);
+                break;
+            case 35:
+                b.id = Integer.parseInt(s);
+                break;
+            case 36:
+                b.isClosed = s;
+                break;
+            case 38:
+                b.multiAreaRules = (s.equals("true")) ? true : false;
+                break;
+            case 40:
+                b.openingTime = Integer.parseInt(s);
+                break;
+            case 41:
+                b.openingTime12h = s;
+                break;
+
+            case 53:
+                b.getProvider().setId(Integer.parseInt(s));
+                break;
+            case 54:
+                b.getProvider().setName(s);
+                break;
+            case 56:
+                b.rules = (s.equals("true")) ? true : false;
+                break;
+            default:
+
+        }
+    }
+
+    public void getPropertyInfo(int i, Hashtable hshtbl, PropertyInfo pi) {
+        switch (i) {
+            case 0:
+                pi.type = PropertyInfo.INTEGER_CLASS;
+                pi.name = "AreaID";
+                break;
+            case 1:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "Area_Name";
+                break;
+            case 2:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "BR_Title";
+                break;
+            case 3:
+                pi.type = PropertyInfo.INTEGER_CLASS;
+                pi.name = "BR_Value";
+                break;
+            case 4:
+                pi.type = PropertyInfo.VECTOR_CLASS;
+                pi.name = "BranchAreas";
+                break;
+            case 5:
+                pi.type = PropertyInfo.VECTOR_CLASS;
+                pi.name = "BranchItems";
+                break;
+            case 6:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "BranchLogo";
+                break;
+            case 7:
+                pi.type = PropertyInfo.VECTOR_CLASS;
+                pi.name = "BranchMembers";
+                break;
+            case 8:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "BranchMenuLogo";
+                break;
+            case 9:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "BranchRates";
+                break;
+            case 10:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "BranchRules";
+                break;
+            case 11:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "Branch_Address";
+                break;
+            case 12:
+                pi.type = PropertyInfo.OBJECT_CLASS;
+                pi.name = "Branch_Address_L2";
+                break;
+            case 13:
+                pi.type = PropertyInfo.OBJECT_CLASS;
+                pi.name = "Branch_Delivery";
+                break;
+            case 14:
+                pi.type = PropertyInfo.OBJECT_CLASS;
+                pi.name = "Branch_Discount";
+                break;
+            case 15:
+                pi.type = PropertyInfo.OBJECT_CLASS;
+                pi.name = "Branch_Discount";
+                break;
+            case 16:
+                pi.type = PropertyInfo.BOOLEAN_CLASS;
+                pi.name = "Branch_ExtraRates";
+                break;
+            case 17:
+                pi.type = PropertyInfo.OBJECT_CLASS;
+                pi.name = "Branch_Mincharge";
+                break;
+            case 18:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "Branch_Name";
+                break;
+            case 19:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "Branch_Name_L2";
+                break;
+            case 20:
+                pi.type = PropertyInfo.BOOLEAN_CLASS;
+                pi.name = "Branch_Online";
+                break;
+            case 21:
+                pi.type = PropertyInfo.INTEGER_CLASS;
+                pi.name = "Branch_Order_ID";
+                break;
+            case 22:
+                pi.type = PropertyInfo.OBJECT_CLASS;
+                pi.name = "Branch_Taxes";
+                break;
+            case 23:
+                pi.type = PropertyInfo.OBJECT_CLASS;
+                pi.name = "Branch_Tips";
+                break;
+            case 24:
+                pi.type = PropertyInfo.OBJECT_CLASS;
+                pi.name = "BrancheRules";
+                break;
+            case 25:
+                pi.type = PropertyInfo.INTEGER_CLASS;
+                pi.name = "Category_Id";
+                break;
+            case 26:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "Category_Name";
+                break;
+            case 27:
+                pi.type = PropertyInfo.INTEGER_CLASS;
+                pi.name = "ClosingTime";
+                break;
+            case 28:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "ClosingTime12h";
+                break;
+            case 29:
+                pi.type = PropertyInfo.INTEGER_CLASS;
+                pi.name = "CountryTimeZone";
+                break;
+            case 30:
+                pi.type = PropertyInfo.OBJECT_CLASS;
+                pi.name = "DayOff";
+                break;
+            case 31:
+                pi.type = PropertyInfo.INTEGER_CLASS;
+                pi.name = "DeliverIn";
+                break;
+            case 32:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "Delivery_Charge_Type";
+                break;
+            case 33:
+                pi.type = PropertyInfo.OBJECT_CLASS;
+                pi.name = "Discount";
+                break;
+            case 34:
+                pi.type = PropertyInfo.OBJECT_CLASS;
+                pi.name = "Discount_Type";
+                break;
+            case 35:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "FaxNumber";
+                break;
+            case 36:
+                pi.type = PropertyInfo.INTEGER_CLASS;
+                pi.name = "Id";
+                break;
+            case 37:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "IsClosed";
+                break;
+            case 38:
+                pi.type = PropertyInfo.OBJECT_CLASS;
+                pi.name = "MemberBranchPrice";
+                break;
+            case 39:
+                pi.type = PropertyInfo.BOOLEAN_CLASS;
+                pi.name = "MultiAreaRules";
+                break;
+            case 40:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "OBranchHstatusName";
+                break;
+            case 41:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "OpeningTime";
+                break;
+            case 42:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "OpeningTime12h";
+                break;
+            case 43:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "OrderBranchNumber";
+                break;
+            case 44:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "OrderBranchStatus";
+                break;
+            case 45:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "Branch_Name_L2";
+                break;
+            case 46:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "OrderBranchStatusId";
+                break;
+            case 47:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "OrderBranchStatusUiMessage";
+                break;
+            case 48:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "OrderBranchTrackingDate";
+                break;
+            case 49:
+                pi.type = PropertyInfo.OBJECT_CLASS;
+                pi.name = "OrderbranchPrice";
+                break;
+            case 50:
+                pi.type = PropertyInfo.INTEGER_CLASS;
+                pi.name = "Parent_Status";
+                break;
+            case 51:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "Phone1";
+                break;
+            case 52:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "Phone2";
+                break;
+            case 53:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "Phone3";
+                break;
+            case 54:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "ProviderDescription";
+                break;
+            case 55:
+                pi.type = PropertyInfo.INTEGER_CLASS;
+                pi.name = "Provider_Id";
+                break;
+            case 56:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "Provider_Name";
+                break;
+            case 57:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "REASONBRANCH_TEXT";
+                break;
+            case 58:
+                pi.type = PropertyInfo.BOOLEAN_CLASS;
+                pi.name = "Rules";
+                break;
+            case 59:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "SHORTBranchNAME";
+                break;
+            case 60:
+                pi.type = PropertyInfo.STRING_CLASS;
+                pi.name = "SHORT_Branch_NAME2";
+                break;
+            case 61:
+                pi.type = PropertyInfo.OBJECT_CLASS;
+                pi.name = "StrDayOff";
+                break;
+            case 62:
+                pi.type = PropertyInfo.OBJECT_CLASS;
+                pi.name = "StrDayOffAREG";
+                break;
+            case 63:
+                pi.type = PropertyInfo.OBJECT_CLASS;
+                pi.name = "SubTotal";
+                break;
+            case 64:
+                pi.type = PropertyInfo.OBJECT_CLASS;
+                pi.name = "TimeLimit";
+                break;
+            case 65:
+                pi.type = PropertyInfo.OBJECT_CLASS;
+                pi.name = "TipsShare";
+                break;
+            case 66:
+                pi.type = PropertyInfo.INTEGER_CLASS;
+                pi.name = "UserOrderID";
+                break;
+            default:
+                pi.type = PropertyInfo.OBJECT_CLASS;
+                pi.name = "default";
+        }
     }
 }
