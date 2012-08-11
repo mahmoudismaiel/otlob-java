@@ -12,11 +12,9 @@ import org.ksoap2.serialization.SoapObject;
 import otlobmobile.gui.MainScreenForm;
 import otlobmobile.gui.OtlobForm;
 import otlobmobile.gui.OtlobMidlet;
-import otlobmobile.model.City;
 import otlobmobile.model2.City2;
 import otlobmobile.utils.GUIManager;
 import otlobmobile.utils.ObjectButton;
-import otlobmobile.webclient.OtlobDataDisplayClient;
 import otlobmobile.webclient.OtlobGatewayV3Client;
 
 /**
@@ -29,7 +27,7 @@ public class CitiesForm extends OtlobForm {
     private Hashtable areaForms;
 
     public CitiesForm(MainScreenForm parent) {
-        super(parent, true, "Choose City");
+        super(parent, true, "Choose City2");
         areaForms = new Hashtable();
         cities = new Vector(0);
         fillFormComponents();
@@ -40,12 +38,18 @@ public class CitiesForm extends OtlobForm {
         Runnable r = new Runnable() {
 
             public void run() {
-                //  SoapObject o = OtlobDataDisplayClient.getCountryCities(OtlobMidlet.CULTURE, 2);
-                //  cities = City.parseCities(o);
-                //  OtlobDataDisplayClient.getCountryCities(OtlobMidlet.CULTURE, 2);
-                //  System.out.println("ZZZZZ");
-                SoapObject o = OtlobGatewayV3Client.getCountryCities(2);
-                cities = City2.parseCities(o);
+                /**
+                 * Use these lines if you want to use the first version of Web Service
+                 */
+                 // SoapObject o = OtlobDataDisplayClient.getCountryCities(OtlobMidlet.CULTURE, 2);
+               //   cities = City2.parseCities(o);
+                
+                
+                /**
+                 * Use these lines if you want to use the other version of Web Service
+                 */
+                SoapObject o = OtlobGatewayV3Client.getCountryCities(2,OtlobMidlet.CULTURE);
+                cities = City2.parseCities(o,2);
             }
         };
         try {
@@ -57,8 +61,8 @@ public class CitiesForm extends OtlobForm {
         setLayout(new BoxLayout(BoxLayout.Y_AXIS));
         for (int i = 0; i < cities.size(); i++) {
             City2 c = (City2) cities.elementAt(i);
-            String name = ((OtlobMidlet.CULTURE.equals(OtlobMidlet.CULTURE_AR))) ? c.getCityNameAR() : c.getCityName();
-            ObjectButton b = new ObjectButton(c, name);
+           // String name = ((OtlobMidlet.CULTURE.equals(OtlobMidlet.CULTURE_AR))) ? c.getCityNameAR() : c.getCityName();
+            ObjectButton b = new ObjectButton(c, c.getCityName());
             b.addActionListener(enter);
             b.setAlignment(CENTER);
             b.getSelectedStyle().setBgColor(0xEEA336, true);
@@ -75,7 +79,7 @@ public class CitiesForm extends OtlobForm {
         switch (evt.getCommand().getId()) {
             case RUN_COMMAND:
                 setTransitionOutAnimator(GUIManager.SLIDE_RIGHT);
-                City c = (City) (focused).getObject();
+                City2 c = (City2) (focused).getObject();
                 // System.out.println(c);
                 if (!areaForms.containsKey(focused)) {
                     areaForms.put(focused, new CityAreasForm(this, c));

@@ -15,13 +15,15 @@ public class City2 {
 
     //Static Otlob Web Service parameters
     public static final String NAMESPACE = "http://OtlobzService/";
-    public static final String METHOD_NAME = "GetAllCitiesByCountryID";
-    public static final String SOAP_ACTION = "http://OtlobzService/GetAllCitiesByCountryID";  
+    public static final String METHOD_NAME = "GetCitiesByCountryID";
+    public static final String SOAP_ACTION = "http://OtlobzService/GetCitiesByCountryID";
     //Class fields
-    private int id;    
+    private int id;
     private String cityName;
-    private String cityNameAR;
-   
+    private int countryId;
+    private int ssoId;
+    private int flashIndex;
+    private boolean isActive;
 
     public City2() {
     }
@@ -34,14 +36,6 @@ public class City2 {
         this.cityName = cityName;
     }
 
-    public String getCityNameAR() {
-        return cityNameAR;
-    }
-
-    public void setCityNameAR(String cityNameAR) {
-        this.cityNameAR = cityNameAR;
-    }
-
     public int getId() {
         return id;
     }
@@ -50,9 +44,39 @@ public class City2 {
         this.id = id;
     }
 
-   
+    public int getCountryId() {
+        return countryId;
+    }
 
-    public static Vector parseCities(SoapObject soap) {
+    public void setCountryId(int countryId) {
+        this.countryId = countryId;
+    }
+
+    public int getFlashIndex() {
+        return flashIndex;
+    }
+
+    public void setFlashIndex(int flashIndex) {
+        this.flashIndex = flashIndex;
+    }
+
+    public boolean isIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public int getSsoId() {
+        return ssoId;
+    }
+
+    public void setSsoId(int ssoId) {
+        this.ssoId = ssoId;
+    }
+
+    public static Vector parseCities(SoapObject soap, int countryId) {
         Vector cities = new Vector();
         SoapObject content;
         City2 c;
@@ -63,28 +87,40 @@ public class City2 {
                 String s = String.valueOf(content.getProperty(j));
                 switch (j) {
                     case 0:
-                        c.setId(Integer.parseInt(s));
+                        // Extension Data
+                        
                         break;
                     case 1:
                         c.setCityName(s);
                         break;
                     case 2:
-                        c.setCityNameAR(s);
+                        //Override countryId becuz it always come with 0 from the webservice 
+                        c.setCountryId(countryId);
                         break;
-                    
+                    case 3:
+                        c.setFlashIndex(Integer.parseInt(s));
+                        break;
+                    case 4:
+                        c.setId(Integer.parseInt(s));
+                        break;
+                    case 5:
+                        c.setSsoId(Integer.parseInt(s));
+                        break;
+                    case 6:
+                        c.setIsActive((s.equals("true")) ? true : false);
+                        break;
+
                 }
             }
             cities.addElement(c);
 
         }
-        //System.out.println("Found cities:" + cities.size());
+        System.out.println("Found cities:" + cities.size());
 
         return cities;
     }
 
     public String toString() {
-        return "City "+id +" : "+cityName; 
+        return "City " + id + " : " + cityName;
     }
-    
-    
 }

@@ -401,7 +401,7 @@ public class Branch implements KvmSerializable {
             String s = String.valueOf(soap.getProperty(j));
             switch (j) {
                 case 6:
-                    b.branchLogo = s;
+                    b.branchLogo = s;                    
                     break;
                 case 8:
                     b.branchMenuLogo = s;

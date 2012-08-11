@@ -14,12 +14,12 @@ import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransport;
 import org.xmlpull.v1.XmlPullParserException;
 import otlobmobile.model2.City2;
-import otlobmobile.model.Area;
 import otlobmobile.model.AreaInfo;
 import otlobmobile.model.Branch;
-import otlobmobile.model.Category;
 import otlobmobile.model.BranchForMobile;
 import otlobmobile.model.ItemCategory;
+import otlobmobile.model2.Area2;
+import otlobmobile.model2.Category2;
 
 /**
  *
@@ -29,9 +29,9 @@ public class OtlobGatewayV3Client {
 
     public static final String SERVICE_URL = "http://www.otlob.com/OtlobGatewayV3/service.asmx?wsdl";
 
-    public static SoapObject getCountryCities(int countryID) {
+    public static SoapObject getCountryCities(int countryID, String culture) {
         Hashtable props = new Hashtable();
-        // props.put("culture", culture);
+        props.put("culture", culture);
         props.put("countryID", new Integer(countryID));
 
         return callWebServiceMethod(City2.NAMESPACE,
@@ -47,9 +47,9 @@ public class OtlobGatewayV3Client {
         props.put("culture", culture);
         props.put("cityID", new Integer(cityID));
 
-        return callWebServiceMethod(Area.NAMESPACE,
-                Area.METHOD_NAME,
-                Area.SOAP_ACTION,
+        return callWebServiceMethod(Area2.NAMESPACE,
+                Area2.METHOD_NAME,
+                Area2.SOAP_ACTION,
                 SERVICE_URL,
                 props);
 
@@ -60,9 +60,9 @@ public class OtlobGatewayV3Client {
         props.put("culture", culture);
         props.put("areaID", new Integer(areaID));
 
-        return callWebServiceMethod(Category.NAMESPACE,
-                Category.METHOD_NAME,
-                Category.SOAP_ACTION,
+        return callWebServiceMethod(Category2.NAMESPACE,
+                Category2.METHOD_NAME,
+                Category2.SOAP_ACTION,
                 SERVICE_URL,
                 props);
 
@@ -218,14 +218,14 @@ public class OtlobGatewayV3Client {
 
         //  System.out.println("bodyIn error: \n"+envelope.bodyIn);
         SoapObject content = (SoapObject) envelope.bodyIn;
-        //System.out.println("bodyIn: \n" + content.toString());
+        System.out.println("bodyIn: \n" + content.toString());
 
         content = (SoapObject) content.getProperty(0);
-        // System.out.println(content.toString());
-        
-        System.out.println(((SoapObject) content.getProperty(1)).getProperty(0));
+        System.out.println(content.toString());
 
-        content = (SoapObject) ((SoapObject) content.getProperty(1)).getProperty(0);
+        //System.out.println(((SoapObject) content.getProperty(1)).getProperty(0));
+
+        //content = (SoapObject) ((SoapObject) content.getProperty(1)).getProperty(0);
 
 
         return content;

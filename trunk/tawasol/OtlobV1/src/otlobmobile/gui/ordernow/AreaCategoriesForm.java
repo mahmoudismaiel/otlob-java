@@ -11,11 +11,11 @@ import java.util.Vector;
 import org.ksoap2.serialization.SoapObject;
 import otlobmobile.gui.OtlobForm;
 import otlobmobile.gui.OtlobMidlet;
-import otlobmobile.model.Area;
-import otlobmobile.model.Category;
+import otlobmobile.model2.Area2;
+import otlobmobile.model2.Category2;
 import otlobmobile.utils.GUIManager;
 import otlobmobile.utils.ObjectButton;
-import otlobmobile.webclient.OtlobDataDisplayClient;
+import otlobmobile.webclient.OtlobGatewayV3Client;
 
 /**
  *
@@ -25,9 +25,9 @@ public class AreaCategoriesForm extends OtlobForm {
 
     private Vector categories;
     private Hashtable branchForms;
-    private final Area area;
+    private final Area2 area;
 
-    public AreaCategoriesForm(CityAreasForm parent, Area area) {
+    public AreaCategoriesForm(CityAreasForm parent, Area2 area) {
         super(parent, true, "Categories");
         this.area = area;
         branchForms = new Hashtable();
@@ -40,9 +40,9 @@ public class AreaCategoriesForm extends OtlobForm {
 
                 public void run() {
                     /*use areaID -1 to get all the categories*/
-                    SoapObject o = OtlobDataDisplayClient.getCategoriesByAreaID(OtlobMidlet.CULTURE, area.getId());
+                    SoapObject o = OtlobGatewayV3Client.getCategoriesByAreaID(OtlobMidlet.CULTURE, area.getId());
                    // System.out.println("Categoris: \n"+o.toString());
-                    categories = Category.parseAreaCategories(o, area);
+                    categories = Category2.parseAreaCategories(o, area);
                     
 //                    SoapObject o = OtlobDataDisplayClient.getAreaInfo(OtlobMidlet.CULTURE_EN, area.getId(),area.getCity().getId());
 //                    System.out.println("AreaInfo: \n" + o.toString());
@@ -56,7 +56,7 @@ public class AreaCategoriesForm extends OtlobForm {
         }
         setLayout(new BoxLayout(BoxLayout.Y_AXIS));
         for (int i = 0; i < categories.size(); i++) {
-            Category cat = (Category) categories.elementAt(i);
+            Category2 cat = (Category2) categories.elementAt(i);
             ObjectButton b = new ObjectButton(cat, cat.getCategoryName());
             b.addActionListener(enter);
             b.setAlignment(CENTER);
@@ -75,10 +75,10 @@ public class AreaCategoriesForm extends OtlobForm {
             case RUN_COMMAND:
                 setTransitionOutAnimator(GUIManager.SLIDE_RIGHT);
 
-                Category cat = (Category) (focused).getObject();
+                Category2 cat = (Category2) (focused).getObject();
                 System.out.println(cat);
                 if (!branchForms.containsKey(focused)) {
-                    branchForms.put(focused, new CategoryBranchesForm(this, cat));
+                  //  branchForms.put(focused, new CategoryBranchesForm(this, cat));
                 }
                 ((CategoryBranchesForm) branchForms.get(focused)).show();
                 break;
