@@ -99,6 +99,13 @@ public class GUIManager {
         HttpConnection hpc = null;
         DataInputStream dis = null;
         try {
+            //fix url spaces  
+            if (url.indexOf(" ") > -1) {
+                url = replace(url, " ", "");
+                url = url.trim();
+            }
+            
+
             hpc = (HttpConnection) Connector.open(url);
             int length = (int) hpc.getLength();
             byte[] data = new byte[length];
@@ -107,7 +114,9 @@ public class GUIManager {
 
             return Image.createImage(data, 0, data.length);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            System.out.println("Error at Image URL:"+url);
+            //ex.printStackTrace();
+           
         } finally {
             try {
                 if (hpc != null) {
@@ -131,6 +140,28 @@ public class GUIManager {
      */
     public static void showMessage(String title, String message, int type) {
         Dialog.show(title, message, type, null, "رجوع", null);
+    }
+
+    public static String replace(String _text, String _searchStr, String _replacementStr) {
+// String buffer to store str
+        StringBuffer sb = new StringBuffer();
+
+// Search for search
+        int searchStringPos = _text.indexOf(_searchStr);
+        int startPos = 0;
+        int searchStringLength = _searchStr.length();
+
+// Iterate to add string
+        while (searchStringPos != -1) {
+            sb.append(_text.substring(startPos, searchStringPos)).append(_replacementStr);
+            startPos = searchStringPos + searchStringLength;
+            searchStringPos = _text.indexOf(_searchStr, startPos);
+        }
+
+        // Create string
+        sb.append(_text.substring(startPos, _text.length()));
+
+        return sb.toString();
     }
 
     /**
@@ -251,7 +282,6 @@ public class GUIManager {
 //        }
 //        return cc;
 //    }
-
     /**
      * This method is used to add LWUIT ObjectButton to a specific <code>Container</code> or <code>Form</code>
      * @param btnText specifies the ObjectButton's text

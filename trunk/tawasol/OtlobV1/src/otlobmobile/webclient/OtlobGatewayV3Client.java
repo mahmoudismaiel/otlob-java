@@ -19,6 +19,7 @@ import otlobmobile.model.Branch;
 import otlobmobile.model.BranchForMobile;
 import otlobmobile.model.ItemCategory;
 import otlobmobile.model2.Area2;
+import otlobmobile.model2.Branch2;
 import otlobmobile.model2.Category2;
 
 /**
@@ -88,13 +89,11 @@ public class OtlobGatewayV3Client {
         props.put("areaID", new Integer(areaID));
         props.put("categoryID", new Integer(categoryID));
         props.put("countryID", new Integer(countryID));
-//         props.put("areaID", new Integer(75644));
-//        props.put("categoryID", new Integer(-1));
-//        props.put("countryID", new Integer(2));
 
-        return callWebServiceMethod(BranchForMobile.NAMESPACE,
-                Branch.METHOD_NAME,
-                Branch.SOAP_ACTION,
+
+        return callWebServiceMethod(Branch2.NAMESPACE,
+                Branch2.METHOD_NAME,
+                Branch2.SOAP_ACTION,
                 SERVICE_URL,
                 props);
 
@@ -218,16 +217,10 @@ public class OtlobGatewayV3Client {
 
         //  System.out.println("bodyIn error: \n"+envelope.bodyIn);
         SoapObject content = (SoapObject) envelope.bodyIn;
-        System.out.println("bodyIn: \n" + content.toString());
+        //System.out.println("bodyIn: \n" + content.toString());
 
         content = (SoapObject) content.getProperty(0);
-        System.out.println(content.toString());
-
-        //System.out.println(((SoapObject) content.getProperty(1)).getProperty(0));
-
-        //content = (SoapObject) ((SoapObject) content.getProperty(1)).getProperty(0);
-
-
+        //System.out.println(content.toString());
         return content;
     }
 }
