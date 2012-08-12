@@ -4,8 +4,18 @@
  */
 package otlobmobile.model2;
 
+import com.sun.lwuit.Command;
+import com.sun.lwuit.Container;
+import com.sun.lwuit.Label;
+import com.sun.lwuit.geom.Dimension;
+import com.sun.lwuit.layouts.BoxLayout;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Vector;
+
 import org.ksoap2.serialization.SoapObject;
+import otlobmobile.utils.GUIManager;
+import otlobmobile.utils.ObjectButton;
 
 /**
  *
@@ -46,20 +56,9 @@ public class Branch2 {
     private String OHstatusName;
     private int openingTime;
     private String openingTime12h;
-    private String isClosed;
-    private int parentStatus;
-    private String phone1;
-    private String phone2;
-    private String phone3;
+    private boolean isClosed;
     private Provider2 provider;
-    private String REASON_TEXT;
-    private boolean rules;
-    private String SHORT_NAME;
     private int timeLimit;
-    private Vector branchRates;
-    private Vector branchRules;
-    private Vector branchAreas;
-    private Vector branchItems;
 
     public Branch2() {
     }
@@ -75,22 +74,6 @@ public class Branch2 {
 
     public void setOHstatusName(String OHstatusName) {
         this.OHstatusName = OHstatusName;
-    }
-
-    public String getREASON_TEXT() {
-        return REASON_TEXT;
-    }
-
-    public void setREASON_TEXT(String REASON_TEXT) {
-        this.REASON_TEXT = REASON_TEXT;
-    }
-
-    public String getSHORT_NAME() {
-        return SHORT_NAME;
-    }
-
-    public void setSHORT_NAME(String SHORT_NAME) {
-        this.SHORT_NAME = SHORT_NAME;
     }
 
     public Area2 getArea() {
@@ -115,14 +98,6 @@ public class Branch2 {
 
     public void setBranchAddressL2(String branchAddressL2) {
         this.branchAddressL2 = branchAddressL2;
-    }
-
-    public Vector getBranchAreas() {
-        return branchAreas;
-    }
-
-    public void setBranchAreas(Vector branchAreas) {
-        this.branchAreas = branchAreas;
     }
 
     public double getBranchDelivery() {
@@ -165,19 +140,11 @@ public class Branch2 {
         this.branchExtraRates = branchExtraRates;
     }
 
-    public Vector getBranchItems() {
-        return branchItems;
-    }
-
-    public void setBranchItems(Vector branchItems) {
-        this.branchItems = branchItems;
-    }
-
-    public String isClosed() {
+    public boolean isClosed() {
         return isClosed;
     }
 
-    public void setClosed(String isClosed) {
+    public void setClosed(boolean isClosed) {
         this.isClosed = isClosed;
     }
 
@@ -235,22 +202,6 @@ public class Branch2 {
 
     public void setBranchOnline(boolean branchOnline) {
         this.branchOnline = branchOnline;
-    }
-
-    public Vector getBranchRates() {
-        return branchRates;
-    }
-
-    public void setBranchRates(Vector branchRates) {
-        this.branchRates = branchRates;
-    }
-
-    public Vector getBranchRules() {
-        return branchRules;
-    }
-
-    public void setBranchRules(Vector branchRules) {
-        this.branchRules = branchRules;
     }
 
     public double getBranchTaxes() {
@@ -325,52 +276,12 @@ public class Branch2 {
         this.openingTime = openingTime;
     }
 
-    public int getParentStatus() {
-        return parentStatus;
-    }
-
-    public void setParentStatus(int parentStatus) {
-        this.parentStatus = parentStatus;
-    }
-
-    public String getPhone1() {
-        return phone1;
-    }
-
-    public void setPhone1(String phone1) {
-        this.phone1 = phone1;
-    }
-
-    public String getPhone2() {
-        return phone2;
-    }
-
-    public void setPhone2(String phone2) {
-        this.phone2 = phone2;
-    }
-
-    public String getPhone3() {
-        return phone3;
-    }
-
-    public void setPhone3(String phone3) {
-        this.phone3 = phone3;
-    }
-
     public Provider2 getProvider() {
         return provider;
     }
 
     public void setProvider(Provider2 provider) {
         this.provider = provider;
-    }
-
-    public boolean isRules() {
-        return rules;
-    }
-
-    public void setRules(boolean rules) {
-        this.rules = rules;
     }
 
     public int getTimeLimit() {
@@ -393,6 +304,7 @@ public class Branch2 {
         SoapObject content;
         Branch2 b = null;
         Provider2 p = new Provider2();
+        int currentTime = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 
         for (int i = 0; i < soap.getPropertyCount(); i++) {
             content = (SoapObject) soap.getProperty(i);
@@ -436,6 +348,7 @@ public class Branch2 {
                         break;
                     case 10:
                         b.closingTime12h = s;
+                        b.closingTime = convert(s);
                         break;
                     case 11:
                         b.deliverIn = Integer.parseInt(s);
@@ -444,10 +357,13 @@ public class Branch2 {
                         b.id = Integer.parseInt(s);
                         break;
                     case 13:
-                        b.isClosed = s;
+                        //b.isClosed = s;
+
                         break;
                     case 14:
                         b.openingTime = Integer.parseInt(s);
+                      //  System.out.println("O:" + b.openingTime + " , C:" + b.closingTime + " , T:" + currentTime);
+                        b.isClosed = calculateIsClosed(b, currentTime);
                         break;
                     case 15:
                         b.openingTime12h = s;
@@ -466,5 +382,78 @@ public class Branch2 {
 
     public String toString() {
         return "Branch " + id + " : " + branchName;
+    }
+
+    public static Container addStaticContainer(Branch2 branch, Command cmd) {
+        final Container cc = new Container(new BoxLayout(BoxLayout.X_AXIS));
+        cc.getStyle().setPadding(0, 0, 0, 0);
+        cc.getStyle().setMargin(0, 0, 0, 0);
+        ObjectButton btn = new ObjectButton(branch.getBranchName());
+        btn.setObject(branch);
+        btn.addActionListener(cmd);
+        btn.setIcon(GUIManager.loadImage(branch.getBranchMenuLogo()));
+        btn.getSelectedStyle().setBgColor(0xEEA336, true);
+        btn.getSelectedStyle().setFgColor(0x000000, true);
+
+
+        //      b.setTextPosition(ObjectButton.RIGHT);
+        //      b.setAlignment(ObjectButton.RIGHT);
+
+        // Label imageLabel = new Label(GUIManager.loadImage(branch.getBranchMenuLogo()));
+        // imageLabel.getStyle().setMargin(0, 0, 0, 5);
+
+
+
+        // 
+
+        // cc.addComponent(imageLabel);
+        if (branch.isClosed) {
+            Label closed = new Label(GUIManager.getImage("", "closed"));
+            closed.getStyle().setMargin(0, 0, 0, 0);
+            btn.setPreferredSize(new Dimension((int) ((GUIManager.DISPLAY_WIDTH * 0.98) - closed.getPreferredW()), closed.getPreferredH()));
+
+            cc.addComponent(btn);
+            cc.addComponent(closed);
+        } else {
+            btn.setPreferredW((int) ((GUIManager.DISPLAY_WIDTH * 0.98)));
+            cc.addComponent(btn);
+        }
+        return cc;
+    }
+
+    static int convert(String time) {
+
+        // System.out.println(time);
+        // System.out.println(time.substring(time.indexOf(" ")).toUpperCase());
+        boolean pm = "PM".equals(time.substring(time.indexOf(" ") + 1).toUpperCase());
+        int h = Integer.parseInt(time.substring(0, time.indexOf(" ")));
+
+        if (!pm) {
+            if (h == 12) {
+                h = 0;
+            }
+        } else {
+            h = 12 + h;
+        }
+        //System.out.println("PM: " + pm + " , h:" + h);
+        return h;
+    }
+
+    private static boolean calculateIsClosed(Branch2 b, int currentTime) {
+        int o = b.openingTime;
+        double c = b.closingTime;
+        int t = currentTime;
+
+        if (o == c) {
+            return false;
+        }
+
+        if (o > c) {
+            if (t < 12) {
+                t += 24;
+            }
+            c += 24;
+        }
+        return t < o || t >= c;
     }
 }

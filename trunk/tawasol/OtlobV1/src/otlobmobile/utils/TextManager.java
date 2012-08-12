@@ -4,9 +4,7 @@
  */
 package otlobmobile.utils;
 
-import com.sun.lwuit.Command;
 import com.sun.lwuit.Component;
-import com.sun.lwuit.Container;
 import com.sun.lwuit.Font;
 import com.sun.lwuit.Label;
 import com.sun.lwuit.TextArea;
