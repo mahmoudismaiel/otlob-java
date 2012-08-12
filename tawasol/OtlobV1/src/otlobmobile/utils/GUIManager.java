@@ -18,7 +18,6 @@ import com.sun.lwuit.animations.Transition;
 import com.sun.lwuit.animations.Transition3D;
 import com.sun.lwuit.events.ActionListener;
 import com.sun.lwuit.events.FocusListener;
-import com.sun.lwuit.geom.Dimension;
 import com.sun.lwuit.layouts.BorderLayout;
 import com.sun.lwuit.layouts.BoxLayout;
 import com.sun.lwuit.layouts.Layout;
@@ -44,11 +43,11 @@ public class GUIManager {
      */
     public static String ProgressCancellationError = "Progress has been canclled by the user";
     /**
-     * Slides the current Form to thr RIGHT
+     * Slides the current Form to the RIGHT
      */
     public static final Transition SLIDE_RIGHT = CommonTransitions.createSlide(CommonTransitions.SLIDE_HORIZONTAL, true, 500);
     /**
-     * Slides the current Form to thr LEFT
+     * Slides the current Form to the LEFT
      */
     public static final Transition SLIDE_LEFT = CommonTransitions.createSlide(CommonTransitions.SLIDE_HORIZONTAL, false, 500);
     /**
