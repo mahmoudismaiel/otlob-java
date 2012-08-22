@@ -78,7 +78,7 @@ public class AreaCategoriesForm extends OtlobForm {
                 Category2 cat = (Category2) (focused).getObject();
                 System.out.println(cat);
                 if (!branchForms.containsKey(focused)) {
-                  //  branchForms.put(focused, new CategoryBranchesForm(this, cat));
+                    branchForms.put(focused, new CategoryBranchesForm(this, cat));
                 }
                 ((CategoryBranchesForm) branchForms.get(focused)).show();
                 break;

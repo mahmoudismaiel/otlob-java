@@ -14,13 +14,11 @@ import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransport;
 import org.xmlpull.v1.XmlPullParserException;
 import otlobmobile.model2.City2;
-import otlobmobile.model.AreaInfo;
 import otlobmobile.model.Branch;
-import otlobmobile.model.BranchForMobile;
-import otlobmobile.model.ItemCategory;
 import otlobmobile.model2.Area2;
 import otlobmobile.model2.Branch2;
 import otlobmobile.model2.Category2;
+import otlobmobile.model2.MobileItemCategory;
 
 /**
  *
@@ -66,21 +64,6 @@ public class OtlobGatewayV3Client {
                 Category2.SOAP_ACTION,
                 SERVICE_URL,
                 props);
-
-    }
-
-    public static SoapObject getAreaInfo(String culture, int areaID, int countryID) {
-        Hashtable props = new Hashtable();
-        props.put("culture", culture);
-        props.put("areaID", new Integer(areaID));
-        props.put("countryID", new Integer(countryID));
-
-        return callWebServiceMethod(AreaInfo.NAMESPACE,
-                AreaInfo.METHOD_NAME,
-                AreaInfo.SOAP_ACTION,
-                SERVICE_URL,
-                props);
-
     }
 
     public static SoapObject getBranchesByAreaIDCategoryID(String culture, int areaID, int categoryID, int countryID) {
@@ -97,37 +80,7 @@ public class OtlobGatewayV3Client {
                 SERVICE_URL,
                 props);
 
-    }
-
-    public static SoapObject getBranchProfileForMobile(String culture, int branchID, int areaID) {
-        Hashtable props = new Hashtable();
-        props.put("culture", culture);
-        props.put("areaID", new Integer(areaID));
-        props.put("branchID", new Integer(branchID));
-        //  props.put("branchID", Boolean.TRUE);
-
-        return callWebServiceMethod(BranchForMobile.NAMESPACE,
-                BranchForMobile.METHOD_NAME_BRANCH_PROFILE,
-                BranchForMobile.SOAP_ACTION_BRANCH_PROFILE,
-                SERVICE_URL,
-                props);
-
-    }
-
-    public static SoapObject getMenuForMobile(String culture, int branchID, int providerID, boolean status) {
-        Hashtable props = new Hashtable();
-        props.put("culture", culture);
-        props.put("branchID", new Integer(branchID));
-        props.put("providerID", new Integer(providerID));
-        props.put("status", (status) ? Boolean.TRUE : Boolean.FALSE);
-
-        return callWebServiceMethod(ItemCategory.NAMESPACE,
-                ItemCategory.METHOD_NAME_FOR_MOBILE,
-                ItemCategory.SOAP_ACTION_FOR_MOBILE,
-                SERVICE_URL,
-                props);
-
-    }
+    } 
 
     public static SoapObject getBranchProfile(String culture, int branchID, int areaID) {
         Hashtable props = new Hashtable();
@@ -144,16 +97,16 @@ public class OtlobGatewayV3Client {
 
     }
 
-    public static SoapObject getMenu(String culture, Branch branch) {
+    public static SoapObject getMenuForMObile(String culture, int branchID, int providerID) {
         Hashtable props = new Hashtable();
         props.put("culture", culture);
+        props.put("branchID", new Integer(branchID));
+        props.put("Provider_Id", new Integer(providerID));
 
-        props.put("branch", branch);
 
-
-        return callWebServiceMethod(ItemCategory.NAMESPACE,
-                ItemCategory.METHOD_NAME,
-                ItemCategory.SOAP_ACTION,
+        return callWebServiceMethod(MobileItemCategory.NAMESPACE,
+                MobileItemCategory.METHOD_NAME_FOR_MOBILE,
+                MobileItemCategory.SOAP_ACTION_FOR_MOBILE,
                 SERVICE_URL,
                 props);
 
