@@ -4,18 +4,18 @@
  */
 package otlobmobile.gui.ordernow;
 
+import com.sun.lwuit.Dialog;
 import com.sun.lwuit.events.ActionEvent;
 import java.util.Hashtable;
 import java.util.Vector;
 import org.ksoap2.serialization.SoapObject;
 import otlobmobile.gui.OtlobForm;
 import otlobmobile.gui.OtlobMidlet;
-import otlobmobile.model.Branch;
-import otlobmobile.model.BranchForMobile;
-import otlobmobile.model.Category;
+import otlobmobile.model2.Branch2;
+import otlobmobile.model2.Category2;
 import otlobmobile.utils.GUIManager;
 import otlobmobile.utils.ObjectButton;
-import otlobmobile.webclient.OtlobDataDisplayClient;
+import otlobmobile.webclient.OtlobGatewayV3Client;
 
 /**
  *
@@ -23,12 +23,12 @@ import otlobmobile.webclient.OtlobDataDisplayClient;
  */
 public class CategoryBranchesForm extends OtlobForm {
 
-    private int[] fixed_IDs = new int[]{121013, 121867};
+    //private int[] fixed_IDs = new int[]{121013, 121867};
     private Vector branches;
-    private final Category category;
+    private final Category2 category;
     private final Hashtable menuForms;
 
-    public CategoryBranchesForm(AreaCategoriesForm parent, Category category) {
+    public CategoryBranchesForm(AreaCategoriesForm parent, Category2 category) {
         super(parent, true, "Restaurants");
         this.category = category;
         menuForms = new Hashtable();
@@ -40,41 +40,25 @@ public class CategoryBranchesForm extends OtlobForm {
             Runnable r = new Runnable() {
 
                 public void run() {
-                    /*use areaID -1 to get all the categories*/
-                    for (int i = 0; i < fixed_IDs.length; i++) {
-                        /**
-                         * Use this in case you want BranchProfileForMobile
-                         */
-//                        SoapObject o = OtlobDataDisplayClient.getBranchProfileForMobile(OtlobMidlet.CULTURE,
-//                                fixed_IDs[i],
-//                                category.getArea().getId());
-                        
-                        /**
-                         * Use this in case you want Full Branch details
-                         */
-                        SoapObject o = OtlobDataDisplayClient.getBranchProfile(OtlobMidlet.CULTURE,
-                                fixed_IDs[i],
-                                category.getArea().getId());
-                        // category.getArea().getCity().getCountryId());
-                       // System.out.println("Branch" + o.toString());
+                    SoapObject o = OtlobGatewayV3Client.getBranchesByAreaIDCategoryID(OtlobMidlet.CULTURE, category.getArea().getId(), category.getId(), 2);
 
-                        //branches = BranchForMobile.parseBranchProfile(o, category,category.getArea());
+                    branches = Branch2.parseBranchProfile(o, category, category.getArea());
 
-                        //for (int j = 0; j < branches.size(); j++) {
-                        //    BranchForMobile branch = (BranchForMobile)branches.elementAt(j);
-                        
-                        Branch branch = Branch.parseBranchProfile(o, category, category.getArea());
-                        ObjectButton btn = new ObjectButton(branch.getBranchName());
-                        btn.setObject(branch);
-                        btn.addActionListener(enter);
-                        btn.setIcon(GUIManager.loadImage(branch.getBranchMenuLogo()));
-                        btn.getSelectedStyle().setBgColor(0xEEA336, true);
-                        btn.getSelectedStyle().setFgColor(0x000000, true);
-                        addComponent(btn);
 
-                        //}
+                    for (int j = 0; j < branches.size(); j++) {
+
+
+                        Branch2 branch = (Branch2) branches.elementAt(j);
+//                        ObjectButton btn = new ObjectButton(branch.getBranchName());
+//                        btn.setObject(branch);
+//                        btn.addActionListener(enter);
+//                        btn.setIcon(GUIManager.loadImage(branch.getBranchMenuLogo()));
+//                        btn.getSelectedStyle().setBgColor(0xEEA336, true);
+//                        btn.getSelectedStyle().setFgColor(0x000000, true);
+                        addComponent(Branch2.addStaticContainer(branch, enter));
 
                     }
+
                 }
             };
             try {
@@ -83,16 +67,7 @@ public class CategoryBranchesForm extends OtlobForm {
                 ex.printStackTrace();
             }
         }
-//        setLayout(new BoxLayout(BoxLayout.Y_AXIS));
-//        for (int i = 0; i < categories.size(); i++) {
-//            Category cat = (Category) categories.elementAt(i);
-//            ObjectButton b = new ObjectButton(cat, cat.getCategoryName());
-//            b.addActionListener(enter);
-//            b.setAlignment(CENTER);
-//            b.getSelectedStyle().setBgColor(0xEEA336, true);
-//            b.getSelectedStyle().setFgColor(0x000000, true);
-//            addComponent(b);
-//        }
+
     }
 
     /**
@@ -103,12 +78,17 @@ public class CategoryBranchesForm extends OtlobForm {
         switch (evt.getCommand().getId()) {
             case RUN_COMMAND:
                 setTransitionOutAnimator(GUIManager.SLIDE_RIGHT);
-                Branch branch = (Branch) (focused).getObject();
-                // System.out.println(branch);
-                if (!menuForms.containsKey(focused)) {
-                    menuForms.put(focused, new BranchMenuForm(this, branch));
+                Branch2 branch = (Branch2) (focused).getObject();
+                System.out.println(branch);
+                if (branch.isClosed()) {
+                    GUIManager.showMessage("Error", "This restaurant is closed right now, please come back later.",Dialog.TYPE_ERROR );
+                } else {
+                    if (!menuForms.containsKey(focused)) {
+                         menuForms.put(focused, new BranchMenuForm(this, branch));
+                    }
+                     ((BranchMenuForm) menuForms.get(focused)).show();
                 }
-                ((BranchMenuForm) menuForms.get(focused)).show();
+
                 break;
             case BACK_COMMAND:
                 setTransitionOutAnimator(GUIManager.SLIDE_LEFT);

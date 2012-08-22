@@ -4,19 +4,24 @@
  */
 package otlobmobile.gui.ordernow;
 
+import com.sun.lwuit.Button;
+import com.sun.lwuit.Container;
+import com.sun.lwuit.Font;
+import com.sun.lwuit.Label;
 import com.sun.lwuit.events.ActionEvent;
 import com.sun.lwuit.layouts.BoxLayout;
+import com.sun.lwuit.layouts.GridLayout;
+import com.sun.lwuit.plaf.UIManager;
 import java.util.Hashtable;
 import java.util.Vector;
 import org.ksoap2.serialization.SoapObject;
 import otlobmobile.gui.OtlobForm;
 import otlobmobile.gui.OtlobMidlet;
-import otlobmobile.model.Branch;
-import otlobmobile.model.BranchForMobile;
-import otlobmobile.model.Category;
+import otlobmobile.model2.Branch2;
+import otlobmobile.model2.MobileItemCategory;
 import otlobmobile.utils.GUIManager;
 import otlobmobile.utils.ObjectButton;
-import otlobmobile.webclient.OtlobDataDisplayClient;
+import otlobmobile.webclient.OtlobGatewayV3Client;
 
 /**
  *
@@ -26,9 +31,12 @@ public class BranchMenuForm extends OtlobForm {
 
     private Vector categories;
     private Hashtable catItemsForms;
-    private final Branch branch;
+    private final Branch2 branch;
+    private Label totalOrders, minCharge;
+    private float ordersValue;
+    private SoapObject categoriesObject;
 
-    public BranchMenuForm(CategoryBranchesForm parent, Branch branch) {
+    public BranchMenuForm(CategoryBranchesForm parent, Branch2 branch) {
         super(parent, true, "Menu");
         this.branch = branch;
         catItemsForms = new Hashtable();
@@ -39,17 +47,11 @@ public class BranchMenuForm extends OtlobForm {
         if (categories == null) {
             Runnable r = new Runnable() {
 
-                public void run() {                 
-                    boolean closed = (branch.isClosed().equals("0"))?false:true;
-//                    SoapObject o = OtlobDataDisplayClient.getMenuForMobile(OtlobMidlet.CULTURE,
-//                                branch.getId(),
-//                                branch.getProvider().getId(),
-//                                closed);
-                    SoapObject o = OtlobDataDisplayClient.getMenu(OtlobMidlet.CULTURE,
-                                branch);
-                        // category.getArea().getCity().getCountryId());
-                        System.out.println("Menu " + o.toString());
-                  
+                public void run() {
+                    categories = new Vector();
+                    categoriesObject = OtlobGatewayV3Client.getMenuForMObile(OtlobMidlet.CULTURE, branch.getId(), branch.getProvider().getId());
+                    
+                    categories = MobileItemCategory.praseMobileCategories(categoriesObject,branch);
                     
                 }
             };
@@ -58,18 +60,26 @@ public class BranchMenuForm extends OtlobForm {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            
+
         }
         setLayout(new BoxLayout(BoxLayout.Y_AXIS));
+        System.out.println("Found Mobile Categories :" + categories.size());
         for (int i = 0; i < categories.size(); i++) {
-            Category cat = (Category) categories.elementAt(i);
-            ObjectButton b = new ObjectButton(cat, cat.getCategoryName());
+            MobileItemCategory cat = (MobileItemCategory) categories.elementAt(i);
+            Container catContainer = new Container(new BoxLayout(BoxLayout.X_AXIS));
+            Label catCount = new Label(" "+cat.getOrderCount() +" ");
+            cat.setOrderCountLabel(catCount);
+            catContainer.addComponent(catCount);
+            ObjectButton b = new ObjectButton(cat, cat.getItemCatName());
             b.addActionListener(enter);
             b.setAlignment(CENTER);
             b.getSelectedStyle().setBgColor(0xEEA336, true);
             b.getSelectedStyle().setFgColor(0x000000, true);
-            addComponent(b);
+            b.setPreferredW((int)(GUIManager.DISPLAY_WIDTH * 0.97  - catCount.getWidth()));
+            catContainer.addComponent(b);
+            addComponent(catContainer);
         }
+        addFooterDetails();
     }
 
     /**
@@ -93,5 +103,27 @@ public class BranchMenuForm extends OtlobForm {
                 parent.show();
                 break;
         }
+    }
+
+    private void addFooterDetails() {
+        final Font smallFont = Font.createSystemFont(Font.FACE_SYSTEM, Font.STYLE_PLAIN, Font.SIZE_SMALL);
+        Container c = new Container(new GridLayout(1, 2));
+        String s = UIManager.getInstance().localize("Total Orders:", "Total Orders:");
+        s += ordersValue;
+        String currency = UIManager.getInstance().localize("LE", "LE");
+        s += " " + currency + " ";
+        totalOrders = new Label(s);
+
+        totalOrders.getStyle().setFont(smallFont);
+        c.addComponent(totalOrders);
+
+        s = UIManager.getInstance().localize("Min. Charge:", "Min. Charge:");
+        s += branch.getBranchMinCharge();
+        s += " " + currency + " ";
+        minCharge = new Label(s);
+        minCharge.getStyle().setFont(smallFont);
+        c.addComponent(minCharge);
+        c.setScrollable(true);
+        addComponent(c);
     }
 }

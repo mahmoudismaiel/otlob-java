@@ -339,6 +339,7 @@ public class Branch2 {
                         break;
                     case 7:
                         b.branchMinCharge = Double.parseDouble(s);
+                        b.branchMinCharge /= 1.0;
                         break;
                     case 8:
                         b.branchName = s;
@@ -362,7 +363,7 @@ public class Branch2 {
                         break;
                     case 14:
                         b.openingTime = Integer.parseInt(s);
-                      //  System.out.println("O:" + b.openingTime + " , C:" + b.closingTime + " , T:" + currentTime);
+                        //  System.out.println("O:" + b.openingTime + " , C:" + b.closingTime + " , T:" + currentTime);
                         b.isClosed = calculateIsClosed(b, currentTime);
                         break;
                     case 15:
@@ -373,6 +374,7 @@ public class Branch2 {
                         break;
                 }
             }
+            b.setProvider(p);
             branches.addElement(b);
         }
         System.out.println("Found Branches:" + branches.size());
@@ -381,7 +383,7 @@ public class Branch2 {
     }
 
     public String toString() {
-        return "Branch " + id + " : " + branchName;
+        return "Branch " + id + " : " + branchName + ", Provider ID:" + provider.id;
     }
 
     public static Container addStaticContainer(Branch2 branch, Command cmd) {
@@ -395,21 +397,10 @@ public class Branch2 {
         btn.getSelectedStyle().setBgColor(0xEEA336, true);
         btn.getSelectedStyle().setFgColor(0x000000, true);
 
-
-        //      b.setTextPosition(ObjectButton.RIGHT);
-        //      b.setAlignment(ObjectButton.RIGHT);
-
-        // Label imageLabel = new Label(GUIManager.loadImage(branch.getBranchMenuLogo()));
-        // imageLabel.getStyle().setMargin(0, 0, 0, 5);
-
-
-
-        // 
-
-        // cc.addComponent(imageLabel);
         if (branch.isClosed) {
             Label closed = new Label(GUIManager.getImage("", "closed"));
             closed.getStyle().setMargin(0, 0, 0, 0);
+            closed.getStyle().setPadding(0, 0, 0, 0);
             btn.setPreferredSize(new Dimension((int) ((GUIManager.DISPLAY_WIDTH * 0.98) - closed.getPreferredW()), closed.getPreferredH()));
 
             cc.addComponent(btn);
