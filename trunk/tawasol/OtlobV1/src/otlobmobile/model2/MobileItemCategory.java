@@ -24,6 +24,9 @@ public class MobileItemCategory {
     private int orderCount;
     private Label orderCountLabel;
     private Branch2 branch;
+    //index of Category in the Soap Object
+    private int index;
+   
 
     public MobileItemCategory() {
     }
@@ -96,6 +99,13 @@ public class MobileItemCategory {
         this.orderCountLabel = orderCountLabel;
     }
 
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public int getIndex() {
+        return index;
+    }    
     
     public static Vector praseMobileCategories(SoapObject soap, Branch2 b) {
         Vector categories = new Vector();
@@ -104,7 +114,8 @@ public class MobileItemCategory {
         for (int i = 0; i < soap.getPropertyCount(); i++) {
             content = (SoapObject) soap.getProperty(i);
             //System.out.println("Count zz:"+content.getPropertyCount());
-             cat = new MobileItemCategory(b);        
+             cat = new MobileItemCategory(b); 
+             cat.setIndex(i);
             for (int j = 0; j < content.getPropertyCount(); j++) {
                
                 String s = String.valueOf(content.getProperty(j));
@@ -133,4 +144,10 @@ public class MobileItemCategory {
         }        
         return categories;
     }
+
+    public String toString() {
+        return "MobileItemCategory "+id +" , name :" + itemCatName;
+    }
+    
+    
 }

@@ -35,11 +35,13 @@ public class BranchMenuForm extends OtlobForm {
     private Label totalOrders, minCharge;
     private float ordersValue;
     private SoapObject categoriesObject;
+    private final String currency;
 
     public BranchMenuForm(CategoryBranchesForm parent, Branch2 branch) {
         super(parent, true, "Menu");
         this.branch = branch;
         catItemsForms = new Hashtable();
+        currency = UIManager.getInstance().localize("LE", "LE");
         fillFormComponents();
     }
 
@@ -50,9 +52,8 @@ public class BranchMenuForm extends OtlobForm {
                 public void run() {
                     categories = new Vector();
                     categoriesObject = OtlobGatewayV3Client.getMenuForMObile(OtlobMidlet.CULTURE, branch.getId(), branch.getProvider().getId());
-                    
-                    categories = MobileItemCategory.praseMobileCategories(categoriesObject,branch);
-                    
+                    categories = MobileItemCategory.praseMobileCategories(categoriesObject, branch);
+
                 }
             };
             try {
@@ -67,7 +68,7 @@ public class BranchMenuForm extends OtlobForm {
         for (int i = 0; i < categories.size(); i++) {
             MobileItemCategory cat = (MobileItemCategory) categories.elementAt(i);
             Container catContainer = new Container(new BoxLayout(BoxLayout.X_AXIS));
-            Label catCount = new Label(" "+cat.getOrderCount() +" ");
+            Label catCount = new Label(" " + cat.getOrderCount() + " ");
             cat.setOrderCountLabel(catCount);
             catContainer.addComponent(catCount);
             ObjectButton b = new ObjectButton(cat, cat.getItemCatName());
@@ -75,28 +76,43 @@ public class BranchMenuForm extends OtlobForm {
             b.setAlignment(CENTER);
             b.getSelectedStyle().setBgColor(0xEEA336, true);
             b.getSelectedStyle().setFgColor(0x000000, true);
-            b.setPreferredW((int)(GUIManager.DISPLAY_WIDTH * 0.97  - catCount.getWidth()));
+            b.setPreferredW((int) (GUIManager.DISPLAY_WIDTH * 0.97 - catCount.getWidth()));
             catContainer.addComponent(b);
             addComponent(catContainer);
         }
-        addFooterDetails();
+
+        Container c = addFooterDetails();
+
+        addComponent(c);
+
+        //Add Dummy Button to make the bottom container scrollable
+        Button dummy = new Button(" ");
+        dummy.getUnselectedStyle().setBgTransparency(00);
+        dummy.getSelectedStyle().setBgTransparency(00);
+        dummy.setPreferredH(2);
+        addComponent(dummy);
     }
 
     /**
      * {@inheritDoc}
      */
     public void actionPerformed(ActionEvent evt) {
-        final ObjectButton focused = (ObjectButton) getFocused();
+        final Object o = getFocused();
         switch (evt.getCommand().getId()) {
             case RUN_COMMAND:
-//                setTransitionOutAnimator(GUIManager.SLIDE_RIGHT);
-//
-//                Category cat = (Category) (focused).getObject();
-//               // System.out.println(cat);
-//                if (!branchForms.containsKey(focused)) {
-//                    branchForms.put(focused, new CategoryBranchesForm(this, cat));
-//                }
-//                ((CategoryBranchesForm) branchForms.get(focused)).show();
+                if (o instanceof ObjectButton) {
+                    ObjectButton focused = (ObjectButton) o;
+                    setTransitionOutAnimator(GUIManager.SLIDE_RIGHT);
+
+                    MobileItemCategory cat = (MobileItemCategory) (focused).getObject();
+                    System.out.println(cat);
+                    if (!catItemsForms.containsKey(focused)) {
+                        final SoapObject itemsObject = (SoapObject) categoriesObject.getProperty(cat.getIndex());
+                        catItemsForms.put(focused, new MenuCategoryForm(this, cat, (SoapObject) itemsObject.getProperty(1)));
+                    }
+                    ((MenuCategoryForm) catItemsForms.get(focused)).show();
+                }
+
                 break;
             case BACK_COMMAND:
                 setTransitionOutAnimator(GUIManager.SLIDE_LEFT);
@@ -105,12 +121,11 @@ public class BranchMenuForm extends OtlobForm {
         }
     }
 
-    private void addFooterDetails() {
+    private Container addFooterDetails() {        
         final Font smallFont = Font.createSystemFont(Font.FACE_SYSTEM, Font.STYLE_PLAIN, Font.SIZE_SMALL);
         Container c = new Container(new GridLayout(1, 2));
         String s = UIManager.getInstance().localize("Total Orders:", "Total Orders:");
         s += ordersValue;
-        String currency = UIManager.getInstance().localize("LE", "LE");
         s += " " + currency + " ";
         totalOrders = new Label(s);
 
@@ -123,7 +138,23 @@ public class BranchMenuForm extends OtlobForm {
         minCharge = new Label(s);
         minCharge.getStyle().setFont(smallFont);
         c.addComponent(minCharge);
-        c.setScrollable(true);
-        addComponent(c);
+        //c.setScrollable(true);
+
+        return c;
+    }
+
+    public void updateTotalOrders(float newOrdersValue) {
+        ordersValue += newOrdersValue;
+
+        String s = UIManager.getInstance().localize("Total Orders:", "Total Orders:");
+        s += ordersValue;
+        s += " " + currency + " ";
+        totalOrders.setText(s);
+        // invalidate();
+        revalidate();
+    }
+
+    public String getCurrency() {
+        return currency;
     }
 }
