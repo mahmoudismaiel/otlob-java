@@ -1,0 +1,1 @@
+This is the J2ME version of OTLOB food ordering service mobile client, it will be developed using the open source library LWUIT
